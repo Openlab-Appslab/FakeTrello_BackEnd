@@ -17,7 +17,7 @@ public class Config {
     CommandLineRunner commandLineRunner (UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             String encodePass = passwordEncoder.encode("1234");
-            User user = new User("Mato",  encodePass,"mato@gmail.com" );
+            User user = new User(  encodePass,"mato@gmail.com" );
             userRepository.save(user);
         };
     }

@@ -23,7 +23,7 @@ public class UserService {
     public void addNewUser(UserRegistrationDTO userRegistrationDTO) {
         String encodePassword = encoder.encode(userRegistrationDTO.getPassword());
 
-        User user = new User(userRegistrationDTO.getName(), encodePassword, userRegistrationDTO.getEmail());
+        User user = new User(encodePassword, userRegistrationDTO.getEmail());
 
         userRepository.save(user);
     }
