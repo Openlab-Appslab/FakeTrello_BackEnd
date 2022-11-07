@@ -1,16 +1,11 @@
 package FakeTrelloBackEnd.example.FakeTrelloBackEnd.presentation;
 
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.Security.UserDetailsImpl;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.UserRegistrationDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service.UserService;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
@@ -29,4 +24,10 @@ public class MainController {
     public void userRegistration(@RequestBody UserRegistrationDTO userRegistrationDTO){
         userService.addNewUser(userRegistrationDTO);
     }
+
+    @DeleteMapping("/delete/user")
+    public void deleteUser(@RequestBody UserRegistrationDTO userRegistrationDTO){
+        userService.deleteUser(userRegistrationDTO.getEmail());
+    }
+
 }
