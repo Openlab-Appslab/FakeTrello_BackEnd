@@ -11,4 +11,5 @@ import lombok.Setter;
 @Setter
 public class UserEditDTO {
     private String email;
+    private String password;
 }
