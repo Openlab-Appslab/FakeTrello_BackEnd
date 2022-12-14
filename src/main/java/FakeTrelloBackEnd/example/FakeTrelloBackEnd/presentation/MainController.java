@@ -33,16 +33,19 @@ public class MainController {
         userService.addNewUser(userRegistrationDTO);
     }
 
-    @DeleteMapping("/delete/user")
-    public void deleteUser(@RequestBody UserRegistrationDTO userRegistrationDTO){
-        userService.deleteUser(userRegistrationDTO.getEmail());
+    @DeleteMapping("/deleteUser")
+    public void deleteUser(Authentication authentication){
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        userService.deleteUser(userDetails.getUsername());
     }
 
-    @PutMapping("/edit/user")
+    @PutMapping("/editUser")
     public void editUser(@RequestBody UserEditDTO userEditDTO, Authentication authentication){
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         userService.editUser(userEditDTO, userDetails.getUsername());
     }
+
+    //TASK CONTROLLER
 
     @PostMapping("/createTask")
     public void createTask(@RequestBody CreateTaskDTO createTaskDTO, Authentication authentication){

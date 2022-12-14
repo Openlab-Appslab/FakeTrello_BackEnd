@@ -1,6 +1,5 @@
 package FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model;
 
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserAlreadyExists;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -51,10 +50,10 @@ public class User {
     public User(String password, String email) {
         this.password = password;
         this.email = email;
-        this.firstName = "Nedefinované";
-        this.lastName = "Nedefinované";
-        this.nickname = "Nedefinované";
-        this.phoneNumber = 0;
+        this.firstName = null;
+        this.lastName = null;
+        this.nickname = null;
+        this.phoneNumber = null;
         this.listOfTasks = new HashSet<>();
     }
 }
