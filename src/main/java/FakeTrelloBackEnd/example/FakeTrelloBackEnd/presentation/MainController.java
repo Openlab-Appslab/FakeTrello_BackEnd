@@ -1,6 +1,7 @@
 package FakeTrelloBackEnd.example.FakeTrelloBackEnd.presentation;
 
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.taskDTO.CreateTaskDTO;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.taskDTO.EditTaskDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserDetailsDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserEditDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserRegistrationDTO;
@@ -64,6 +65,11 @@ public class MainController {
     public void deleteTask(@PathVariable Long id, Authentication authentication){
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         taskService.deleteTask(id, userDetails.getUsername());
+    }
+
+    @PutMapping("/editTask")
+    public Task editTask(@RequestBody EditTaskDTO dto){
+        return taskService.editTask(dto);
     }
 
 }

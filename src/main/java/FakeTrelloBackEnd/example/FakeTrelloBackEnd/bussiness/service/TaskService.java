@@ -1,10 +1,12 @@
 package FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service;
 
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.taskDTO.CreateTaskDTO;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.taskDTO.EditTaskDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.Task;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.User;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.TaskRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.UserRepository;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.BadRequest;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserDoesntExist;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.taskException.TaskDoesNotExist;
 import lombok.AllArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 @Service
 @AllArgsConstructor
@@ -53,5 +56,23 @@ public class TaskService {
         user.getListOfTasks().remove(task);
         task.setUser(null);
         taskRepository.delete(task);
+    }
+
+    @Transactional
+    public Task editTask(EditTaskDTO dto) {
+        Task task = getUsersTask(dto.getId());
+
+        saveIfNotEmpty(dto.getDate(), task, Task::setDate);
+        saveIfNotEmpty(dto.getText(), task, Task::setText);
+        saveIfNotEmpty(dto.getHeadline(), task, Task::setHeadline);
+
+        return task;
+    }
+
+    public void saveIfNotEmpty(String toBeSet, Task task, BiConsumer<Task,String> setter){
+        if (toBeSet.isEmpty())
+            throw new BadRequest("Something went wrong!");
+
+        setter.accept(task, toBeSet);
     }
 }
