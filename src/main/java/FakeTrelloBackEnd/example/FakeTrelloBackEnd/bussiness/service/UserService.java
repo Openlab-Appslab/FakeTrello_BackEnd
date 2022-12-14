@@ -1,23 +1,21 @@
 package FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service;
 
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.UserEditDTO;
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.UserRegistrationDTO;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserDetailsDTO;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserEditDTO;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserRegistrationDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.User;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.UserRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.BadRequest;
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.SameParameters;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserAlreadyExists;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserDoesntExist;
 import lombok.AllArgsConstructor;
-import net.bytebuddy.asm.Advice;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.DOMException;
 
-import javax.management.BadAttributeValueExpException;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 @Service
 @AllArgsConstructor
@@ -43,62 +41,43 @@ public class UserService {
     }
 
     public void deleteUser(String email) {
-
-        if(userRepository.findByEmail(email).isPresent()){
-            userRepository.delete(userRepository.findByEmail(email).get());
-        }else{
-            throw new UserDoesntExist("User with this email doesn't exist: "+email);
-        }
+        userRepository.delete(checkIfUserExistAndSendBack(email));
     }
 
     @Transactional
-    public String editUser(UserEditDTO userEditDTO, String email) {
-        Optional<User> user = userRepository.findByEmail(email);
+    public void editUser(UserEditDTO userEditDTO, String email) {
+        User optionalUser = checkIfUserExistAndSendBack(email);
+        saveIfNotEmpty(userEditDTO.getFirstName(), optionalUser, User::setFirstName);
+        saveIfNotEmpty(userEditDTO.getLastName(), optionalUser, User::setLastName);
+        saveIfNotEmpty(userEditDTO.getNickname(), optionalUser, User::setNickname);
+        saveIfNotEmpty(userEditDTO.getPhoneNumber(), optionalUser, User::setPhoneNumber);
+    }
 
-        if(user.isPresent()){
+    public <T> void saveIfNotEmpty(T toBeSet, User user, BiConsumer<User, T> setter){
 
-            if(userEditDTO.getEmail().length() > 0  && userEditDTO.getEmail() != null){
+        if(toBeSet == null)
+           throw new BadRequest("Something went wrong!");
 
-                if(userRepository.findByEmail(userEditDTO.getEmail()).isEmpty()){
+        setter.accept(user, toBeSet);
+    }
 
-                    if(!Objects.equals(user.get().getEmail(), userEditDTO.getEmail())){
-                        user.get().setEmail(userEditDTO.getEmail());
-                    }else{
-                        throw new SameParameters("You have same email! Change It!");
-                    }
+    public UserDetailsDTO getUserDetails(String email) {
+        User userOptional = checkIfUserExistAndSendBack(email); //findUserOrThrow
 
-                }else {
-                    throw new UserAlreadyExists("User Already Exists!");
-                }
-            }else{
-                throw new BadRequest("Bad params!");
-            }
+        return convertUserToDTO(userOptional);
+    }
 
+    public User checkIfUserExistAndSendBack(String email){
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserDoesntExist("User doesn't found!"));
+    }
 
-            if(userEditDTO.getPassword().length() > 0  && userEditDTO.getPassword() != null){
-
-                    if(!Objects.equals(user.get().getPassword(), userEditDTO.getPassword())){
-                        String encodePassword = encoder.encode(userEditDTO.getPassword());
-                        user.get().setPassword(encodePassword);
-                    }else{
-                        throw new SameParameters("You have same password! Change It!");
-                    }
-            }else{
-                throw new BadRequest("Bad params!");
-            }
-
-
-            return user.get().getEmail();
-
-        }else{
-            throw new UserDoesntExist("User with this email doesn't exist: "+email);
-        }
-
-
-        //part for password
-
-
-
-
+    public UserDetailsDTO convertUserToDTO(User optionalUser){
+        return new UserDetailsDTO(
+                optionalUser.getEmail(),
+                optionalUser.getFirstName(),
+                optionalUser.getLastName(),
+                optionalUser.getNickname(),
+                optionalUser.getPhoneNumber()
+        );
     }
 }

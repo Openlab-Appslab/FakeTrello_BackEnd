@@ -1,4 +1,4 @@
-package FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto;
+package FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +10,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserEditDTO {
-    private String email;
-    private String password;
+    private String firstName;
+    private String lastName;
+    private String nickname;
+    private Integer phoneNumber;
 }

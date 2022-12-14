@@ -1,4 +1,4 @@
-package FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto;
+package FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,12 +1,11 @@
 package FakeTrelloBackEnd.example.FakeTrelloBackEnd.presentation;
 
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.UserEditDTO;
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.UserRegistrationDTO;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserDetailsDTO;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserEditDTO;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserRegistrationDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,11 +15,10 @@ public class MainController {
 
     private final UserService userService;
 
-    @GetMapping("/showBSI")
-    public String sendBasicInfo(Authentication authentication){
+    @GetMapping("/getUserDetails")
+    public UserDetailsDTO sendBasicInfo(Authentication authentication){
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        return userDetails.getUsername();
+        return userService.getUserDetails(userDetails.getUsername());
     }
 
     @PostMapping("/noAuth/register")
@@ -34,9 +32,9 @@ public class MainController {
     }
 
     @PutMapping("/edit/user")
-    public String editUser(@RequestBody UserEditDTO userEditDTO, Authentication authentication){
+    public void editUser(@RequestBody UserEditDTO userEditDTO, Authentication authentication){
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return userService.editUser(userEditDTO, userDetails.getUsername());
+        userService.editUser(userEditDTO, userDetails.getUsername());
     }
 
 }
