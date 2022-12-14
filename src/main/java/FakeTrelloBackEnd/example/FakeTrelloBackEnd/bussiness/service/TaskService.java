@@ -6,6 +6,7 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.User;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.TaskRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.UserRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserDoesntExist;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.taskException.TaskDoesNotExist;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
-
     private UserRepository userRepository;
-    private TaskService taskService;
-
     @Transactional
     public void createTask(CreateTaskDTO createTaskDTO, String email) {
         User user = getUserOrThrow(email);
@@ -34,6 +32,7 @@ public class TaskService {
         );
 
         user.getListOfTasks().add(task); //saving automation, it's happen by annotation @Transactional
+        taskRepository.save(task);
     }
 
     public User getUserOrThrow(String email){
@@ -45,7 +44,7 @@ public class TaskService {
         return user.getListOfTasks();
     }
 
-    public Task getUsersTask(String email) {
-
+    public Task getUsersTask(Long id) {
+        return taskRepository.findById(id).orElseThrow(() -> new TaskDoesNotExist("Task was not found!"));
     }
 }

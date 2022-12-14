@@ -56,10 +56,9 @@ public class MainController {
         return taskService.getAllUsersTask(userDetails.getUsername());
     }
 
-    @GetMapping("/getUsersTask")
-    public Task getUsersTask(Authentication authentication){
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return taskService.getUsersTask(userDetails.getUsername());
+    @GetMapping("/getUsersTask/{id}")
+    public Task getUsersTask(@PathVariable Long id){
+        return taskService.getUsersTask(id);
     }
 
 }

@@ -22,7 +22,8 @@ public class Task {
     @Column(name = "headline")
     private String headline;
 
-    @Column(name = "text")
+    @Column(name = "text",
+            columnDefinition = "TEXT")
     private String text;
 
     @Column(name = "date")
