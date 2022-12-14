@@ -8,11 +8,9 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.UserRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserDoesntExist;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.taskException.TaskDoesNotExist;
 import lombok.AllArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -46,5 +44,14 @@ public class TaskService {
 
     public Task getUsersTask(Long id) {
         return taskRepository.findById(id).orElseThrow(() -> new TaskDoesNotExist("Task was not found!"));
+    }
+
+    public void deleteTask(Long id, String email) {
+        User user = getUserOrThrow(email);
+        Task task = getUsersTask(id);
+
+        user.getListOfTasks().remove(task);
+        task.setUser(null);
+        taskRepository.delete(task);
     }
 }

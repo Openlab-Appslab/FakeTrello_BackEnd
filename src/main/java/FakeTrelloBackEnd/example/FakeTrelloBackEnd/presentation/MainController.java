@@ -9,7 +9,6 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service.TaskService
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,6 +58,12 @@ public class MainController {
     @GetMapping("/getUsersTask/{id}")
     public Task getUsersTask(@PathVariable Long id){
         return taskService.getUsersTask(id);
+    }
+
+    @DeleteMapping("/deleteTask/{id}")
+    public void deleteTask(@PathVariable Long id, Authentication authentication){
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        taskService.deleteTask(id, userDetails.getUsername());
     }
 
 }
