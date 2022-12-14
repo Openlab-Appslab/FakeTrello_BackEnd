@@ -1,19 +1,26 @@
 package FakeTrelloBackEnd.example.FakeTrelloBackEnd.presentation;
 
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.taskDTO.CreateTaskDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserDetailsDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserEditDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserRegistrationDTO;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.Task;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service.TaskService;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 @RestController
 @AllArgsConstructor
 public class MainController {
 
     private final UserService userService;
+    private final TaskService taskService;
 
     @GetMapping("/getUserDetails")
     public UserDetailsDTO sendBasicInfo(Authentication authentication){
@@ -35,6 +42,24 @@ public class MainController {
     public void editUser(@RequestBody UserEditDTO userEditDTO, Authentication authentication){
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         userService.editUser(userEditDTO, userDetails.getUsername());
+    }
+
+    @PostMapping("/createTask")
+    public void createTask(@RequestBody CreateTaskDTO createTaskDTO, Authentication authentication){
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        taskService.createTask(createTaskDTO, userDetails.getUsername());
+    }
+
+    @GetMapping("/getAllUsersTask")
+    public Set<Task> getAllUsersTask(Authentication authentication){
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return taskService.getAllUsersTask(userDetails.getUsername());
+    }
+
+    @GetMapping("/getUsersTask")
+    public Task getUsersTask(Authentication authentication){
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return taskService.getUsersTask(userDetails.getUsername());
     }
 
 }

@@ -27,4 +27,15 @@ public class Task {
 
     @Column(name = "date")
     private String date;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+    public Task(String headline, String text, String date, User user) {
+        this.headline = headline;
+        this.text = text;
+        this.date = date;
+        this.user = user;
+    }
 }

@@ -1,12 +1,14 @@
 package FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model;
 
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserAlreadyExists;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -42,8 +44,9 @@ public class User {
             unique = true)
     private Integer phoneNumber;
 
-
-    //private Set<Task> listOfTask;
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private Set<Task> listOfTasks;
 
     public User(String password, String email) {
         this.password = password;
@@ -52,5 +55,6 @@ public class User {
         this.lastName = "Nedefinované";
         this.nickname = "Nedefinované";
         this.phoneNumber = 0;
+        this.listOfTasks = new HashSet<>();
     }
 }
