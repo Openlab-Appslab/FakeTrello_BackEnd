@@ -9,13 +9,14 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.UserRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.BadRequest;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserDoesntExist;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.taskException.TaskDoesNotExist;
-import antlr.StringUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.*;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -33,7 +34,8 @@ public class TaskService {
                 createTaskDTO.getHeadline(),
                 createTaskDTO.getText(),
                 createTaskDTO.getDate(),
-                user
+                user,
+                listOfOriginNameOfImages
         );
 
         user.getListOfTasks().add(task); //saving automation, it's happen by annotation @Transactional
@@ -44,11 +46,24 @@ public class TaskService {
         Set<String> listOfOriginNameOfImages = new HashSet<>();
 
         for (MultipartFile image: listOfImages) {
-            String fileName = StringUtils.cleanPat
+            String fileName = StringUtils.cleanPath(image.getOriginalFilename());
+            if(fileName.contains(".."))
+                throw new BadRequest("Image is wrong! Try again");
+
+            listOfOriginNameOfImages.add(encodeBytesToStringWithTryCatch(image));
         }
 
-        return listOfOriginNameOfImages
+        return listOfOriginNameOfImages;
     }
+
+    private String encodeBytesToStringWithTryCatch(MultipartFile image) {
+        try {
+            return Base64.getEncoder().encodeToString(image.getBytes());
+        } catch (IOException e) {
+            throw new BadRequest("Something went wrong");
+        }
+    }
+
 
     public User getUserOrThrow(String email){
         return userRepository.findByEmail(email).orElseThrow(() -> new UserDoesntExist("User was not found!"));
