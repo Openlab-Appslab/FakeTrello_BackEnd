@@ -22,6 +22,11 @@ public class MainController {
     private final UserService userService;
     private final TaskService taskService;
 
+    @GetMapping("/login")
+    public void login(){
+
+    }
+
     @GetMapping("/getUserDetails")
     public UserDetailsDTO sendBasicInfo(Authentication authentication){
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -53,10 +58,10 @@ public class MainController {
         taskService.createTask(createTaskDTO, userDetails.getUsername());
     }
 
-    @GetMapping("/getAllUsersTask")
-    public Set<Task> getAllUsersTask(Authentication authentication){
+    @GetMapping("/getAllUsersTasks")
+    public Set<Task> getAllUsersTasks(Authentication authentication){
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return taskService.getAllUsersTask(userDetails.getUsername());
+        return taskService.getAllUsersTasks(userDetails.getUsername());
     }
 
     @GetMapping("/getUsersTask/{id}")

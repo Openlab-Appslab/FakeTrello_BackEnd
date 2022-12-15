@@ -9,10 +9,14 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.UserRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.BadRequest;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserDoesntExist;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.taskException.TaskDoesNotExist;
+import antlr.StringUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
@@ -24,7 +28,7 @@ public class TaskService {
     @Transactional
     public void createTask(CreateTaskDTO createTaskDTO, String email) {
         User user = getUserOrThrow(email);
-
+        Set<String> listOfOriginNameOfImages = encodeBytesToStringOrThrow(createTaskDTO.getListOfImages());
         Task task = new Task(
                 createTaskDTO.getHeadline(),
                 createTaskDTO.getText(),
@@ -36,11 +40,21 @@ public class TaskService {
         taskRepository.save(task);
     }
 
+    private Set<String> encodeBytesToStringOrThrow(Set<MultipartFile> listOfImages) {
+        Set<String> listOfOriginNameOfImages = new HashSet<>();
+
+        for (MultipartFile image: listOfImages) {
+            String fileName = StringUtils.cleanPat
+        }
+
+        return listOfOriginNameOfImages
+    }
+
     public User getUserOrThrow(String email){
         return userRepository.findByEmail(email).orElseThrow(() -> new UserDoesntExist("User was not found!"));
     }
 
-    public Set<Task> getAllUsersTask(String email) {
+    public Set<Task> getAllUsersTasks(String email) {
         User user = getUserOrThrow(email);
         return user.getListOfTasks();
     }

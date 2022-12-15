@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -33,10 +35,24 @@ public class Task {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @Lob
+    @Column(name = "images",
+    columnDefinition = "BLOB")
+    private Set<String> listOfImages;
+
     public Task(String headline, String text, String date, User user) {
         this.headline = headline;
         this.text = text;
         this.date = date;
         this.user = user;
+        this.listOfImages = new HashSet<>();
+    }
+
+    public Task(String headline, String text, String date, User user, Set<String> listOfImages) {
+        this.headline = headline;
+        this.text = text;
+        this.date = date;
+        this.user = user;
+        this.listOfImages = listOfImages;
     }
 }
