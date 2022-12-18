@@ -62,4 +62,5 @@ public class User {
       //  this.profileImage = null;
         this.listOfTasks = new HashSet<>();
     }
+
 }
