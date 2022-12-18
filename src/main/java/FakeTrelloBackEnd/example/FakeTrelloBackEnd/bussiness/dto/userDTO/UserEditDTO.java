@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,4 +15,5 @@ public class UserEditDTO {
     private String lastName;
     private String nickname;
     private Integer phoneNumber;
+    private MultipartFile profileImage;
 }

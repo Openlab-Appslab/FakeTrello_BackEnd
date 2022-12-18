@@ -47,6 +47,11 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Set<Task> listOfTasks;
 
+   // @Lob
+   // @Column(name="profile_image",
+   // columnDefinition = "CLOB")
+   // private String profileImage;
+
     public User(String password, String email) {
         this.password = password;
         this.email = email;
@@ -54,6 +59,7 @@ public class User {
         this.lastName = null;
         this.nickname = null;
         this.phoneNumber = null;
+      //  this.profileImage = null;
         this.listOfTasks = new HashSet<>();
     }
 }

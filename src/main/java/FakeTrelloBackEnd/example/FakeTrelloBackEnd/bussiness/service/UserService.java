@@ -12,10 +12,14 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Base64;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 @Service
 @AllArgsConstructor
@@ -51,6 +55,23 @@ public class UserService {
         saveIfNotEmpty(userEditDTO.getLastName(), optionalUser, User::setLastName);
         saveIfNotEmpty(userEditDTO.getNickname(), optionalUser, User::setNickname);
         saveIfNotEmpty(userEditDTO.getPhoneNumber(), optionalUser, User::setPhoneNumber);
+
+        //saveIfNotEmpty(getOriginFileName(userEditDTO.getProfileImage()), optionalUser, User::setProfileImage);
+    }
+
+    private String getOriginFileName(MultipartFile profileImage) {
+            if(!StringUtils.cleanPath(Objects.requireNonNull(profileImage.getOriginalFilename())).contains(".."))
+                throw new BadRequest("Something went wrong! Try again");
+
+        String stringOfImage;
+
+        try {
+            stringOfImage = Base64.getEncoder().encodeToString(profileImage.getBytes());
+        } catch (IOException e) {
+            throw new BadRequest("Something went wrong!" + e);
+        }
+
+        return stringOfImage;
     }
 
     public <T> void saveIfNotEmpty(T toBeSet, User user, BiConsumer<User, T> setter){

@@ -46,8 +46,8 @@ public class TaskService {
         Set<String> listOfOriginNameOfImages = new HashSet<>();
 
         for (MultipartFile image: listOfImages) {
-            String fileName = StringUtils.cleanPath(image.getOriginalFilename());
-            if(fileName.contains(".."))
+
+            if(StringUtils.cleanPath(image.getOriginalFilename()).contains(".."))
                 throw new BadRequest("Image is wrong! Try again");
 
             listOfOriginNameOfImages.add(encodeBytesToStringWithTryCatch(image));
