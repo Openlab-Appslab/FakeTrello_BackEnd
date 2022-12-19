@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -47,10 +48,11 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Set<Task> listOfTasks;
 
-   // @Lob
-   // @Column(name="profile_image",
-   // columnDefinition = "CLOB")
-   // private String profileImage;
+    @Lob
+    @Column(name="profile_image")
+    @Type(type = "org.hibernate.type.ImageType")
+    @JsonIgnore
+    private String profileImage;
 
     public User(String password, String email) {
         this.password = password;
@@ -59,7 +61,7 @@ public class User {
         this.lastName = null;
         this.nickname = null;
         this.phoneNumber = null;
-      //  this.profileImage = null;
+        this.profileImage = null;
         this.listOfTasks = new HashSet<>();
     }
 

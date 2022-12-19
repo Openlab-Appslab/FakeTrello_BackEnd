@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -34,24 +34,24 @@ public class Task {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-   // @Lob
-   // @Column(name = "images",
-   // columnDefinition = "CLOB")
-  //  private Set<String> listOfImages;
+    @Lob
+    @Column(name = "images")
+    @Type(type = "org.hibernate.type.ImageType")
+    private String listOfImages;
 
     public Task(String headline, String text, String date, User user) {
         this.headline = headline;
         this.text = text;
         this.date = date;
         this.user = user;
-      //  this.listOfImages = new HashSet<>();
+        this.listOfImages = null;
     }
 
-    public Task(String headline, String text, String date, User user, Set<String> listOfImages) {
+    public Task(String headline, String text, String date, User user, String listOfImages) {
         this.headline = headline;
         this.text = text;
         this.date = date;
         this.user = user;
-       // this.listOfImages = listOfImages;
+        this.listOfImages = listOfImages;
     }
 }

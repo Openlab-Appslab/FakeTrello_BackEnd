@@ -8,10 +8,16 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserReg
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.Task;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service.TaskService;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service.UserService;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.BadRequest;
 import lombok.AllArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.Set;
 
 @RestController
@@ -51,10 +57,11 @@ public class MainController {
 
     //TASK CONTROLLER
 
-    @PostMapping("/createTask")
-    public void createTask(@RequestBody CreateTaskDTO createTaskDTO, Authentication authentication){
+    @PostMapping(value = "/createTask",
+    consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public void createTask(@RequestBody CreateTaskDTO createTaskDTO, @RequestParam("image") MultipartFile image, Authentication authentication){
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        taskService.createTask(createTaskDTO, userDetails.getUsername());
+        taskService.createTask(createTaskDTO, userDetails.getUsername(), image);
     }
 
     @GetMapping("/getAllUsersTasks")
@@ -77,6 +84,26 @@ public class MainController {
     @PutMapping("/editTask")
     public Task editTask(@RequestBody EditTaskDTO dto){
         return taskService.editTask(dto);
+    }
+
+    @PostMapping("/editWithImage")
+    public void editUserWithImage(@RequestParam("firstName") String firstName){
+
+    }
+
+    @PostMapping("/testImage")
+    public ResponseEntity<byte[]> addImage(@RequestParam("image") MultipartFile file){
+
+
+
+        try {
+            return ResponseEntity
+                    .ok()
+                    .contentType(MediaType.valueOf(file.getContentType()))
+                    .body(file.getBytes());
+        } catch (IOException e) {
+            throw new BadRequest("Something went wrong");
+        }
     }
 
 }

@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,5 +13,5 @@ public class CreateTaskDTO {
     private String headline;
     private String text;
     private String date;
-    private Set<MultipartFile> listOfImages;
+    //private MultipartFile listOfImages;
 }

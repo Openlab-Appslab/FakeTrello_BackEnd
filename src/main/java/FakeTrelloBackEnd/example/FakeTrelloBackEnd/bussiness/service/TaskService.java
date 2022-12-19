@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Base64;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
@@ -27,33 +26,29 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private UserRepository userRepository;
     @Transactional
-    public void createTask(CreateTaskDTO createTaskDTO, String email) {
+    public void createTask(CreateTaskDTO createTaskDTO, String email, MultipartFile image) {
         User user = getUserOrThrow(email);
-        Set<String> listOfOriginNameOfImages = encodeBytesToStringOrThrow(createTaskDTO.getListOfImages());
         Task task = new Task(
                 createTaskDTO.getHeadline(),
                 createTaskDTO.getText(),
                 createTaskDTO.getDate(),
                 user,
-                listOfOriginNameOfImages
+                encodeBytesToStringOrThrow(image)
         );
 
         user.getListOfTasks().add(task); //saving automation, it's happen by annotation @Transactional
         taskRepository.save(task);
     }
 
-    private Set<String> encodeBytesToStringOrThrow(Set<MultipartFile> listOfImages) {
-        Set<String> listOfOriginNameOfImages = new HashSet<>();
-
-        for (MultipartFile image: listOfImages) {
+    private String encodeBytesToStringOrThrow(MultipartFile image) {
+//        Set<String> listOfOriginNameOfImages = new HashSet<>();
 
             if(StringUtils.cleanPath(image.getOriginalFilename()).contains(".."))
                 throw new BadRequest("Image is wrong! Try again");
 
-            listOfOriginNameOfImages.add(encodeBytesToStringWithTryCatch(image));
-        }
+//            listOfOriginNameOfImages.add(encodeBytesToStringWithTryCatch(image));
 
-        return listOfOriginNameOfImages;
+        return encodeBytesToStringWithTryCatch(image);
     }
 
     private String encodeBytesToStringWithTryCatch(MultipartFile image) {
