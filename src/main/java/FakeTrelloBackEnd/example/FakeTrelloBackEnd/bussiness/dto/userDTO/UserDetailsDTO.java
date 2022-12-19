@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.http.ResponseEntity;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,4 +16,5 @@ public class UserDetailsDTO {
     private String lastName;
     private String nickname;
     private Integer phoneNumber;
+    private ResponseEntity<byte[]> image;
 }

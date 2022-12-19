@@ -6,6 +6,7 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserDet
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserEditDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserRegistrationDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.Task;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.User;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service.TaskService;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service.UserService;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.BadRequest;
@@ -86,15 +87,21 @@ public class MainController {
         return taskService.editTask(dto);
     }
 
-    @PostMapping("/editWithImage")
-    public void editUserWithImage(@RequestParam("firstName") String firstName){
+    @PutMapping("/editWithImage")
+    public void editUserWithImage(@RequestParam("firstName") String firstName,
+                                  @RequestParam("lastName") String lastName,
+                                  @RequestParam("nickname") String nickname,
+                                  @RequestParam("phoneNumber") Integer phoneNumber,
+                                  @RequestParam("image") MultipartFile image,
+                                  Authentication authentication){
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        userService.editWithImage(firstName, lastName, nickname, phoneNumber, image, userDetails.getUsername());
 
     }
 
     @PostMapping("/testImage")
     public ResponseEntity<byte[]> addImage(@RequestParam("image") MultipartFile file){
-
-
 
         try {
             return ResponseEntity
@@ -104,6 +111,13 @@ public class MainController {
         } catch (IOException e) {
             throw new BadRequest("Something went wrong");
         }
+    }
+
+    @GetMapping("/getRawUser")
+    public User getRawUser(Authentication authentication){
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        return userService.getUserByEmail(userDetails.getUsername()).get();
     }
 
 }

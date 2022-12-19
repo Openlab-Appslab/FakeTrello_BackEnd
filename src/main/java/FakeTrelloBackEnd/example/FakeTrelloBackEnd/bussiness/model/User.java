@@ -51,8 +51,7 @@ public class User {
     @Lob
     @Column(name="profile_image")
     @Type(type = "org.hibernate.type.ImageType")
-    @JsonIgnore
-    private String profileImage;
+    private byte[] profileImage;
 
     public User(String password, String email) {
         this.password = password;

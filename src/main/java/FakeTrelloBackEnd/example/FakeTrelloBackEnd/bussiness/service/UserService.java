@@ -9,6 +9,7 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.BadRequest;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserAlreadyExists;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserDoesntExist;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +17,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -55,23 +55,6 @@ public class UserService {
         saveIfNotEmpty(userEditDTO.getLastName(), optionalUser, User::setLastName);
         saveIfNotEmpty(userEditDTO.getNickname(), optionalUser, User::setNickname);
         saveIfNotEmpty(userEditDTO.getPhoneNumber(), optionalUser, User::setPhoneNumber);
-
-        //saveIfNotEmpty(getOriginFileName(userEditDTO.getProfileImage()), optionalUser, User::setProfileImage);
-    }
-
-    private String getOriginFileName(MultipartFile profileImage) {
-            if(!StringUtils.cleanPath(Objects.requireNonNull(profileImage.getOriginalFilename())).contains(".."))
-                throw new BadRequest("Something went wrong! Try again");
-
-        String stringOfImage;
-
-        try {
-            stringOfImage = Base64.getEncoder().encodeToString(profileImage.getBytes());
-        } catch (IOException e) {
-            throw new BadRequest("Something went wrong!" + e);
-        }
-
-        return stringOfImage;
     }
 
     public <T> void saveIfNotEmpty(T toBeSet, User user, BiConsumer<User, T> setter){
@@ -98,7 +81,43 @@ public class UserService {
                 optionalUser.getFirstName(),
                 optionalUser.getLastName(),
                 optionalUser.getNickname(),
-                optionalUser.getPhoneNumber()
-        );
+                optionalUser.getPhoneNumber(),
+                convertByteToResponseEntity(optionalUser.getProfileImage()));
+    }
+
+    @Transactional
+    public void editWithImage(String firstName,
+                              String lastName,
+                              String nickname,
+                              Integer phoneNumber,
+                              MultipartFile image,
+                              String email) {
+
+        User user = checkIfUserExistAndSendBack(email);
+
+        saveIfNotEmpty(firstName, user, User::setFirstName);
+        saveIfNotEmpty(lastName, user, User::setLastName);
+        saveIfNotEmpty(nickname, user, User::setNickname);
+        saveIfNotEmpty(phoneNumber, user, User::setPhoneNumber);
+        saveIfNotEmpty(convertImageToBytes(image), user, User::setProfileImage);
+    }
+
+    public byte[] convertImageToBytes(MultipartFile image){
+
+        if(StringUtils.cleanPath(Objects.requireNonNull(image.getOriginalFilename())).contains(".."))
+            throw new BadRequest("Something went wrong! Try again");
+
+        try {
+            return image.getBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public ResponseEntity<byte[]> convertByteToResponseEntity(byte[] bytesOfImage){
+        return ResponseEntity
+                .ok()
+                .body(bytesOfImage);
     }
 }
