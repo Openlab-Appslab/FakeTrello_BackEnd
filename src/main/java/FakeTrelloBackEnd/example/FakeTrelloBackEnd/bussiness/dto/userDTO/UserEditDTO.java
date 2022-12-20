@@ -14,6 +14,6 @@ public class UserEditDTO {
     private String lastName;
     private String nickname;
     private Integer phoneNumber;
-    //private MultipartFile profileImage;
+    //private MultipartFile image;
 
 }
