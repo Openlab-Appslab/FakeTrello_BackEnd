@@ -67,9 +67,9 @@ public class MainController {
 
     @PostMapping(value = "/createTask",
     consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public void createTask(@RequestBody CreateTaskDTO createTaskDTO, @RequestParam("image") MultipartFile image, Authentication authentication){
+    public void createTask(@RequestBody CreateTaskDTO createTaskDTO, Authentication authentication) throws IOException {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        taskService.createTask(createTaskDTO, userDetails.getUsername(), image);
+        taskService.createTask(createTaskDTO, userDetails.getUsername());
     }
 
     @GetMapping("/getAllUsersTasks")

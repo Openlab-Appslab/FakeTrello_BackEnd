@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -37,7 +38,7 @@ public class Task {
     @Lob
     @Column(name = "images")
     @Type(type = "org.hibernate.type.ImageType")
-    private String listOfImages;
+    private Set<byte[]> listOfImages;
 
     public Task(String headline, String text, String date, User user) {
         this.headline = headline;
@@ -47,7 +48,7 @@ public class Task {
         this.listOfImages = null;
     }
 
-    public Task(String headline, String text, String date, User user, String listOfImages) {
+    public Task(String headline, String text, String date, User user, Set<byte[]> listOfImages) {
         this.headline = headline;
         this.text = text;
         this.date = date;

@@ -12,11 +12,11 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.taskException.TaskD
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Base64;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
@@ -26,37 +26,37 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private UserRepository userRepository;
     @Transactional
-    public void createTask(CreateTaskDTO createTaskDTO, String email, MultipartFile image) {
+    public void createTask(CreateTaskDTO createTaskDTO, String email) throws IOException {
         User user = getUserOrThrow(email);
+
         Task task = new Task(
                 createTaskDTO.getHeadline(),
                 createTaskDTO.getText(),
                 createTaskDTO.getDate(),
                 user,
-                encodeBytesToStringOrThrow(image)
+                checkIfImagesAreValidOrThrow(createTaskDTO.getListOfImages())
         );
 
         user.getListOfTasks().add(task); //saving automation, it's happen by annotation @Transactional
         taskRepository.save(task);
     }
 
-    private String encodeBytesToStringOrThrow(MultipartFile image) {
-//        Set<String> listOfOriginNameOfImages = new HashSet<>();
+    private Set<byte[]> checkIfImagesAreValidOrThrow(Set<MultipartFile> listOfImages) throws IOException {
+            listOfImages.forEach((item) ->{
+                if (Objects.requireNonNull(item.getOriginalFilename()).contains(".."))
+                    throw new BadRequest("Not supported");
+            });
 
-            if(StringUtils.cleanPath(image.getOriginalFilename()).contains(".."))
-                throw new BadRequest("Image is wrong! Try again");
-
-//            listOfOriginNameOfImages.add(encodeBytesToStringWithTryCatch(image));
-
-        return encodeBytesToStringWithTryCatch(image);
+        return encodeBytesToStringWithTryCatch(listOfImages);
     }
 
-    private String encodeBytesToStringWithTryCatch(MultipartFile image) {
-        try {
-            return Base64.getEncoder().encodeToString(image.getBytes());
-        } catch (IOException e) {
-            throw new BadRequest("Something went wrong");
+    private Set<byte[]> encodeBytesToStringWithTryCatch(Set<MultipartFile> listOfImages) throws IOException {
+        Set<byte[]> listOfBytesOfImages = new HashSet<>();
+
+        for (MultipartFile image: listOfImages) {
+            listOfBytesOfImages.add(image.getBytes());
         }
+        return listOfBytesOfImages;
     }
 
 
