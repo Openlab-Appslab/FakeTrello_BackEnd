@@ -65,8 +65,7 @@ public class MainController {
 
     //TASK CONTROLLER
 
-    @PostMapping(value = "/createTask",
-    consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/createTask")
     public void createTask(@RequestBody CreateTaskDTO createTaskDTO, Authentication authentication) throws IOException {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         taskService.createTask(createTaskDTO, userDetails.getUsername());

@@ -1,5 +1,6 @@
 package FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,10 +36,10 @@ public class Task {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-   /* @Lob
+    @JsonIgnore
     @Column(name = "images")
-    @Type(type = "org.hibernate.type.ImageType")
-    private Set<byte[]> listOfImages;*/
+    @OneToMany(mappedBy = "task")
+    private Set<Image> listOfImages;
 
     public Task(String deadline, String text, User user) {
         this.deadline = deadline;
