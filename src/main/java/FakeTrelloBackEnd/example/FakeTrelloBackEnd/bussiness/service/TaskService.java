@@ -30,16 +30,15 @@ public class TaskService {
         User user = getUserOrThrow(email);
 
         Task task = new Task(
-                createTaskDTO.getHeadline(),
+                createTaskDTO.getDeadline(),
                 createTaskDTO.getText(),
-                createTaskDTO.getDate(),
-                user,
-                checkIfImagesAreValidOrThrow(createTaskDTO.getListOfImages())
+                user
         );
 
         user.getListOfTasks().add(task); //saving automation, it's happen by annotation @Transactional
         taskRepository.save(task);
     }
+/*
 
     private Set<byte[]> checkIfImagesAreValidOrThrow(Set<MultipartFile> listOfImages) throws IOException {
             listOfImages.forEach((item) ->{
@@ -58,6 +57,7 @@ public class TaskService {
         }
         return listOfBytesOfImages;
     }
+*/
 
 
     public User getUserOrThrow(String email){
@@ -86,9 +86,8 @@ public class TaskService {
     public Task editTask(EditTaskDTO dto) {
         Task task = getUsersTask(dto.getId());
 
-        saveIfNotEmpty(dto.getDate(), task, Task::setDate);
         saveIfNotEmpty(dto.getText(), task, Task::setText);
-        saveIfNotEmpty(dto.getHeadline(), task, Task::setHeadline);
+        saveIfNotEmpty(dto.getHeadline(), task, Task::setDeadline);
 
         return task;
     }

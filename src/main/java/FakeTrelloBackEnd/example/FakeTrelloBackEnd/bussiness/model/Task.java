@@ -21,38 +21,29 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "headline")
-    private String headline;
+//    @Column(name = "headline")
+//    private String headline;
 
     @Column(name = "text",
             columnDefinition = "TEXT")
     private String text;
 
     @Column(name = "date")
-    private String date;
+    private String deadline;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @Lob
+   /* @Lob
     @Column(name = "images")
     @Type(type = "org.hibernate.type.ImageType")
-    private Set<byte[]> listOfImages;
+    private Set<byte[]> listOfImages;*/
 
-    public Task(String headline, String text, String date, User user) {
-        this.headline = headline;
+    public Task(String deadline, String text, User user) {
+        this.deadline = deadline;
         this.text = text;
-        this.date = date;
         this.user = user;
-        this.listOfImages = null;
     }
 
-    public Task(String headline, String text, String date, User user, Set<byte[]> listOfImages) {
-        this.headline = headline;
-        this.text = text;
-        this.date = date;
-        this.user = user;
-        this.listOfImages = listOfImages;
-    }
 }

@@ -13,8 +13,6 @@ import java.util.Set;
 @Getter
 @Setter
 public class CreateTaskDTO {
-    private String headline;
+    private String deadline;
     private String text;
-    private String date;
-    private Set<MultipartFile> listOfImages;
 }
