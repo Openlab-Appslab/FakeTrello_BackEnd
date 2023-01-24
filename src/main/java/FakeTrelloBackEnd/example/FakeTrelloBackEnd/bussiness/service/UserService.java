@@ -4,6 +4,7 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserDet
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserEditDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserRegistrationDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.User;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.VerificationToken;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.UserRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.BadRequest;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserAlreadyExists;
@@ -17,6 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -27,6 +29,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
+    private final VerificationTokenService verificationTokenService;
 
     public Optional<User> getUserByEmail(String email){
         return userRepository.findByEmail(email);
@@ -35,7 +38,6 @@ public class UserService {
     public void addNewUser(UserRegistrationDTO userRegistrationDTO) {
 
         if(userRepository.findByEmail(userRegistrationDTO.getEmail()).isEmpty()){
-
             String encodePassword = encoder.encode(userRegistrationDTO.getPassword());
             User user = new User(encodePassword, userRegistrationDTO.getEmail());
             userRepository.save(user);
@@ -119,5 +121,30 @@ public class UserService {
         return ResponseEntity
                 .ok()
                 .body(bytesOfImage);
+    }
+
+    @Transactional
+    public void activateUserEmail(String token) {
+        VerificationToken verificationToken = verificationTokenService.findByToken(token);
+
+        if(verificationToken == null){
+            System.out.println("Your verification token is invalid!");
+
+        }else {
+            User user = verificationToken.getUser();
+
+            if (!user.isEnable()) {
+                Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+                if (verificationToken.getExpiryDate().before(currentTimestamp)) {
+                    System.out.println("Your verification token has expired!");
+                } else {
+                    user.setEnable(true);
+                    verificationTokenService.deleteToken(token);
+                    System.out.println("Your account is successfully activated");
+                }
+            } else {
+                System.out.println("Your account is successfully activated");
+            }
+        }
     }
 }

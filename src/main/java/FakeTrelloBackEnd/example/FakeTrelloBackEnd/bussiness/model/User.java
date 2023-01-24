@@ -48,6 +48,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Set<Task> listOfTasks;
 
+    @Column(name = "status")
+    private boolean enable;
+
     @Lob
     @Column(name="profile_image")
     @Type(type = "org.hibernate.type.ImageType")
@@ -62,6 +65,7 @@ public class User {
         this.phoneNumber = null;
         this.profileImage = null;
         this.listOfTasks = new HashSet<>();
+        this.enable = false;
     }
 
 }

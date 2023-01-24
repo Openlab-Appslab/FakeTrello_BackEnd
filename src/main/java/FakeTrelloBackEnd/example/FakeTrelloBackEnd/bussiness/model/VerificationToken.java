@@ -30,8 +30,8 @@ public class VerificationToken {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    public VerificationToken(String token, Timestamp expiryDate) {
+    public VerificationToken(String token, User user) {
         this.token = token;
-        this.expiryDate = expiryDate;
+        this.user = user;
     }
 }
