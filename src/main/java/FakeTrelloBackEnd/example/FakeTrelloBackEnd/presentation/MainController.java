@@ -129,4 +129,10 @@ public class MainController {
 
     }*/
 
+    //Verification with email
+    @GetMapping("/noAuth/verify/{token}")
+    public void activationEmail(@PathVariable String token){
+        userService.activateUserEmail(token);
+    }
+
 }

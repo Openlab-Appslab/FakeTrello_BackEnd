@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 
 @Service
@@ -30,6 +31,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
     private final VerificationTokenService verificationTokenService;
+    private final EmailService emailService;
 
     public Optional<User> getUserByEmail(String email){
         return userRepository.findByEmail(email);
@@ -40,7 +42,19 @@ public class UserService {
         if(userRepository.findByEmail(userRegistrationDTO.getEmail()).isEmpty()){
             String encodePassword = encoder.encode(userRegistrationDTO.getPassword());
             User user = new User(encodePassword, userRegistrationDTO.getEmail());
-            userRepository.save(user);
+
+            Optional<User> saved = Optional.of(userRepository.save(user));
+            saved.ifPresent(u -> {
+                try{
+                    String token = UUID.randomUUID().toString();
+                    verificationTokenService.save(saved.get(),token);
+
+                    emailService.sendVerificationEmail(u);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            });
+
         }else{
             throw new UserAlreadyExists("User Already Exists!");
         }
