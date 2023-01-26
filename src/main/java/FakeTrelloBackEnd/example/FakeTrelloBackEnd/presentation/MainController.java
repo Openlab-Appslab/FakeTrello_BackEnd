@@ -15,11 +15,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.SplittableRandom;
 
 @RestController
 @AllArgsConstructor
@@ -91,6 +93,17 @@ public class MainController {
     @PutMapping("/editTask")
     public Task editTask(@RequestBody EditTaskDTO dto){
         return taskService.editTask(dto);
+    }
+
+    @GetMapping("noAuth/resetPassword/{token}/{password}")
+    public void resetPassword(@PathVariable("token") String token,
+                              @PathVariable("password") String password){
+        userService.checkVerificationTokenIsValidOrThrow(token, password);
+    }
+
+    @GetMapping("noAuth/sendResetEmail/{email}")
+    public void sendResetEmail(@PathVariable String email) throws Exception{
+        userService.sendResetEmail(email);
     }
 
     //PREPARING FOR IMAGE

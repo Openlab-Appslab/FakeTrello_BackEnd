@@ -9,6 +9,8 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.UserRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.BadRequest;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserAlreadyExists;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserDoesntExist;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.tokenException.TokenExpired;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.tokenException.TokenInvalid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -142,7 +144,7 @@ public class UserService {
         VerificationToken verificationToken = verificationTokenService.findByToken(token);
 
         if(verificationToken == null){
-            System.out.println("Your verification token is invalid!");
+            new TokenInvalid("Your verification token is invalid!");
 
         }else {
             User user = verificationToken.getUser();
@@ -150,15 +152,55 @@ public class UserService {
             if (!user.isEnable()) {
                 Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
                 if (verificationToken.getExpiryDate().before(currentTimestamp)) {
-                    System.out.println("Your verification token has expired!");
+                    new TokenExpired("Your verification token has expired!");
                 } else {
                     user.setEnable(true);
                     verificationTokenService.deleteToken(token);
-                    System.out.println("Your account is successfully activated");
                 }
-            } else {
-                System.out.println("Your account is successfully activated");
             }
+        }
+    }
+
+
+    @Transactional
+    public void sendResetEmail(String email) throws Exception{
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserDoesntExist("User was not found!"));
+
+        String token = UUID.randomUUID().toString();
+        verificationTokenService.save(user,token);
+
+        emailService.sendResetPasswordEmail(user);
+    }
+
+    public void checkVerificationTokenIsValidOrThrow(String token, String password) {
+        VerificationToken verificationToken = verificationTokenService.findByToken(token);
+
+        if(verificationToken == null){
+            new TokenInvalid("Your verification token is invalid!");
+        }else {
+            User user = verificationToken.getUser();
+
+            if (user.isEnable()) {
+                Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+                if (verificationToken.getExpiryDate().before(currentTimestamp)) {
+                    new TokenExpired("Your verification token has expired!");
+                } else {
+                    verificationTokenService.deleteToken(token);
+                    resetPassword(user, password);
+                }
+            }
+        }
+    }
+
+    @Transactional
+    public void resetPassword(User user, String password){
+        if(!Objects.equals(user.getPassword(), password)){
+
+             user.setPassword(encoder.encode(password));
+             userRepository.save(user);
+            System.out.println(user.getPassword());
+        }else {
+            throw new BadRequest("Password is same or not valid!");
         }
     }
 }

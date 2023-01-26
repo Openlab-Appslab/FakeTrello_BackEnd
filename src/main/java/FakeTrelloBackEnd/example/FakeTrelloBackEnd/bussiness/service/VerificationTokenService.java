@@ -3,6 +3,7 @@ package FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.User;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.VerificationToken;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.VerificationTokenRepository;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserDoesntExist;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +15,12 @@ import java.util.Calendar;
 public class VerificationTokenService {
     private VerificationTokenRepository verificationTokenRepository;
 
-    public VerificationToken findByToken(String token){
-        return verificationTokenRepository.findByToken(token);
+    public VerificationToken findByToken(String token) {
+       return verificationTokenRepository.findByToken(token).orElseThrow(() -> new UserDoesntExist("User was not found!"));
     }
 
     public VerificationToken findByUser(User user){
-        return verificationTokenRepository.findByUser(user);
+        return verificationTokenRepository.findByUser(user).orElseThrow(() -> new UserDoesntExist("User was not found!"));
     }
 
     public void save(User user, String token){
