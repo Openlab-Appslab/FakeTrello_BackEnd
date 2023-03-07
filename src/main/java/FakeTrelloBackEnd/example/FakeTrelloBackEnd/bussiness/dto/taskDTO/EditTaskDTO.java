@@ -11,6 +11,5 @@ public class EditTaskDTO {
     private Long id;
     private String deadline;
     private String text;
-    private String date;
     private String state;
 }
