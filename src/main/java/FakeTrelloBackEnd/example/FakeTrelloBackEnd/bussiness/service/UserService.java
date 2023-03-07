@@ -120,24 +120,6 @@ public class UserService {
         saveIfNotEmpty(image, user, User::setProfileImage);
     }
 
-    public byte[] convertImageToBytes(MultipartFile image){
-
-        if(StringUtils.cleanPath(Objects.requireNonNull(image.getOriginalFilename())).contains(".."))
-            throw new BadRequest("Something went wrong! Try again");
-
-        try {
-            return image.getBytes();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    public ResponseEntity<byte[]> convertByteToResponseEntity(byte[] bytesOfImage){
-        return ResponseEntity
-                .ok()
-                .body(bytesOfImage);
-    }
 
     @Transactional
     public void activateUserEmail(String token) {
@@ -207,6 +189,7 @@ public class UserService {
     @Transactional
     public void uploadProfilePicture(String image, String email) {
         User user = checkIfUserExistAndSendBack(email);
+        user.setProfileImage(image);
 
     }
 }
