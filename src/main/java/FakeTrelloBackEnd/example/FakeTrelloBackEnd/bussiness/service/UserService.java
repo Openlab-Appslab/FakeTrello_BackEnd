@@ -100,7 +100,7 @@ public class UserService {
                 optionalUser.getLastName(),
                 optionalUser.getNickname(),
                 optionalUser.getPhoneNumber(),
-                convertByteToResponseEntity(optionalUser.getProfileImage()));
+                optionalUser.getProfileImage());
     }
 
     @Transactional
@@ -108,7 +108,7 @@ public class UserService {
                               String lastName,
                               String nickname,
                               Integer phoneNumber,
-                              MultipartFile image,
+                              String image,
                               String email) {
 
         User user = checkIfUserExistAndSendBack(email);
@@ -117,7 +117,7 @@ public class UserService {
         saveIfNotEmpty(lastName, user, User::setLastName);
         saveIfNotEmpty(nickname, user, User::setNickname);
         saveIfNotEmpty(phoneNumber, user, User::setPhoneNumber);
-        saveIfNotEmpty(convertImageToBytes(image), user, User::setProfileImage);
+        saveIfNotEmpty(image, user, User::setProfileImage);
     }
 
     public byte[] convertImageToBytes(MultipartFile image){
@@ -202,5 +202,11 @@ public class UserService {
         }else {
             throw new BadRequest("Password is same or not valid!");
         }
+    }
+
+    @Transactional
+    public void uploadProfilePicture(String image, String email) {
+        User user = checkIfUserExistAndSendBack(email);
+
     }
 }

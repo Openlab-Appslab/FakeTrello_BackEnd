@@ -108,17 +108,24 @@ public class MainController {
 
     //PREPARING FOR IMAGE
 
-    @PutMapping("/editWithImage")
-    public void editUserWithImage(@RequestParam("firstName") String firstName,
-                                  @RequestParam("lastName") String lastName,
-                                  @RequestParam("nickname") String nickname,
-                                  @RequestParam("phoneNumber") Integer phoneNumber,
-                                  @RequestParam("image") MultipartFile image,
-                                  Authentication authentication){
+//    @PutMapping("/editWithImage")
+//    public void editUserWithImage(@RequestParam("firstName") String firstName,
+//                                  @RequestParam("lastName") String lastName,
+//                                  @RequestParam("nickname") String nickname,
+//                                  @RequestParam("phoneNumber") Integer phoneNumber,
+//                                  @RequestParam("image") MultipartFile image,
+//                                  Authentication authentication){
+//
+//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+//        userService.editWithImage(firstName, lastName, nickname, phoneNumber, image, userDetails.getUsername());
+//
+//    }
 
+    @PutMapping("/uploadProfilePicture")
+    public void uploadProfilePicture(@RequestParam("image") String image, Authentication authentication
+    ){
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        userService.editWithImage(firstName, lastName, nickname, phoneNumber, image, userDetails.getUsername());
-
+        userService.uploadProfilePicture(image, userDetails.getUsername());
     }
 
     @PostMapping("/testImage")
@@ -134,13 +141,6 @@ public class MainController {
         }
     }
 
-    /*@PutMapping("/editWithImageWithDTO")
-    public void editUserWithImageWithDTO(UserEditDTO dto, Authentication authentication){
-
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        userService.editWithImage(dto.getFirstName(), dto.getLastName(), dto.getNickname(), dto.getPhoneNumber(), dto.getImage(), userDetails.getUsername());
-
-    }*/
 
     //Verification with email
     @GetMapping("/noAuth/verify/{token}")

@@ -54,7 +54,7 @@ public class User {
     @Lob
     @Column(name="profile_image")
     @Type(type = "org.hibernate.type.ImageType")
-    private byte[] profileImage;
+    private String profileImage;
 
     public User(String password, String email) {
         this.password = password;
@@ -63,7 +63,7 @@ public class User {
         this.lastName = null;
         this.nickname = null;
         this.phoneNumber = null;
-        this.profileImage = null;
+        this.profileImage = "";
         this.listOfTasks = new HashSet<>();
         this.enable = false;
     }
