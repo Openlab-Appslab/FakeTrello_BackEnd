@@ -53,7 +53,6 @@ public class User {
 
     @Lob
     @Column(name="profile_image")
-    @Type(type = "org.hibernate.type.ImageType")
     private String profileImage;
 
     public User(String password, String email) {
