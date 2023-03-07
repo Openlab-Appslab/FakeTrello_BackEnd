@@ -141,6 +141,11 @@ public class MainController {
         }
     }
 
+    @PutMapping("/updateTaskState/{id}")
+    public void updateTaskState(@PathVariable("id") Long id){
+
+    }
+
 
     //Verification with email
     @GetMapping("/noAuth/verify/{token}")
