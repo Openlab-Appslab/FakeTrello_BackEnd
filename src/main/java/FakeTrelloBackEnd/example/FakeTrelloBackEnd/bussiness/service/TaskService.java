@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.Table;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Objects;
@@ -87,13 +88,19 @@ public class TaskService {
         Task task = getUsersTask(dto.getId());
 
         saveIfNotEmpty(dto.getText(), task, Task::setText);
-        saveIfNotEmpty(dto.getHeadline(), task, Task::setDeadline);
+        saveIfNotEmpty(dto.getDeadline(), task, Task::setDeadline);
 
         return task;
     }
 
-    public void saveIfNotEmpty(String toBeSet, Task task, BiConsumer<Task,String> setter){
-        if (toBeSet.isEmpty())
+    @Transactional
+    public void editStateTask(Long id, Task taskFromFE){
+        Task task = getUsersTask(id);
+        task.setTaskState(taskFromFE.getTaskState());
+    }
+
+    public <T> void saveIfNotEmpty(T toBeSet, Task task, BiConsumer<Task,T> setter){
+        if (toBeSet == null)
             throw new BadRequest("Something went wrong!");
 
         setter.accept(task, toBeSet);

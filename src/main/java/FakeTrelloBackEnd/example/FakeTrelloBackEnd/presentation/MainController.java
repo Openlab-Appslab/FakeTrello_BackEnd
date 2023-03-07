@@ -142,8 +142,8 @@ public class MainController {
     }
 
     @PutMapping("/updateTaskState/{id}")
-    public void updateTaskState(@PathVariable("id") Long id){
-
+    public void updateTaskState(@PathVariable("id") Long id, @RequestParam("task") Task task){
+        taskService.editStateTask(id, task);
     }
 
 

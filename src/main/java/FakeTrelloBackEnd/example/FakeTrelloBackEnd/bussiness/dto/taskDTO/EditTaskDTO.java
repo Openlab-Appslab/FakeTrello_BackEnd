@@ -9,7 +9,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class EditTaskDTO {
     private Long id;
-    private String headline;
+    private String deadline;
     private String text;
     private String date;
+    private String taskState;
 }
