@@ -58,13 +58,6 @@ public class MainController {
         userService.editUser(userEditDTO, userDetails.getUsername());
     }
 
-    @GetMapping("/getRawUser")
-    public User getRawUser(Authentication authentication){
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        return userService.getUserByEmail(userDetails.getUsername()).get();
-    }
-
     //TASK CONTROLLER
 
     @PostMapping(value = "/createTask")

@@ -69,6 +69,7 @@ public class UserService {
     @Transactional
     public void editUser(UserEditDTO userEditDTO, String email) {
         User optionalUser = checkIfUserExistAndSendBack(email);
+
         saveIfNotEmpty(userEditDTO.getFirstName(), optionalUser, User::setFirstName);
         saveIfNotEmpty(userEditDTO.getLastName(), optionalUser, User::setLastName);
         saveIfNotEmpty(userEditDTO.getNickname(), optionalUser, User::setNickname);
@@ -77,10 +78,9 @@ public class UserService {
 
     public <T> void saveIfNotEmpty(T toBeSet, User user, BiConsumer<User, T> setter){
 
-        if(toBeSet == null)
-           throw new BadRequest("Something went wrong!");
-
-        setter.accept(user, toBeSet);
+        if(toBeSet != null)
+            setter.accept(user, toBeSet);
+            //throw new BadRequest("Something went wrong!");
     }
 
     public UserDetailsDTO getUserDetails(String email) {
@@ -93,32 +93,7 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow(() -> new UserDoesntExist("User doesn't found!"));
     }
 
-    public UserDetailsDTO convertUserToDTO(User optionalUser){
-        return new UserDetailsDTO(
-                optionalUser.getEmail(),
-                optionalUser.getFirstName(),
-                optionalUser.getLastName(),
-                optionalUser.getNickname(),
-                optionalUser.getPhoneNumber(),
-                optionalUser.getProfileImage());
-    }
 
-    @Transactional
-    public void editWithImage(String firstName,
-                              String lastName,
-                              String nickname,
-                              Integer phoneNumber,
-                              String image,
-                              String email) {
-
-        User user = checkIfUserExistAndSendBack(email);
-
-        saveIfNotEmpty(firstName, user, User::setFirstName);
-        saveIfNotEmpty(lastName, user, User::setLastName);
-        saveIfNotEmpty(nickname, user, User::setNickname);
-        saveIfNotEmpty(phoneNumber, user, User::setPhoneNumber);
-        saveIfNotEmpty(image, user, User::setProfileImage);
-    }
 
 
     @Transactional
@@ -126,7 +101,7 @@ public class UserService {
         VerificationToken verificationToken = verificationTokenService.findByToken(token);
 
         if(verificationToken == null){
-            new TokenInvalid("Your verification token is invalid!");
+           throw new TokenInvalid("Your verification token is invalid!");
 
         }else {
             User user = verificationToken.getUser();
@@ -134,7 +109,7 @@ public class UserService {
             if (!user.isEnable()) {
                 Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
                 if (verificationToken.getExpiryDate().before(currentTimestamp)) {
-                    new TokenExpired("Your verification token has expired!");
+                   throw new TokenExpired("Your verification token has expired!");
                 } else {
                     user.setEnable(true);
                     verificationTokenService.deleteToken(token);
@@ -158,14 +133,14 @@ public class UserService {
         VerificationToken verificationToken = verificationTokenService.findByToken(token);
 
         if(verificationToken == null){
-            new TokenInvalid("Your verification token is invalid!");
+            throw new TokenInvalid("Your verification token is invalid!");
         }else {
             User user = verificationToken.getUser();
 
             if (user.isEnable()) {
                 Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
                 if (verificationToken.getExpiryDate().before(currentTimestamp)) {
-                    new TokenExpired("Your verification token has expired!");
+                    throw new TokenExpired("Your verification token has expired!");
                 } else {
                     verificationTokenService.deleteToken(token);
                     resetPassword(user, password);
@@ -191,5 +166,15 @@ public class UserService {
         User user = checkIfUserExistAndSendBack(email);
         user.setProfileImage(image);
 
+    }
+
+    public UserDetailsDTO convertUserToDTO(User optionalUser){
+        return new UserDetailsDTO(
+                optionalUser.getEmail(),
+                optionalUser.getFirstName(),
+                optionalUser.getLastName(),
+                optionalUser.getNickname(),
+                optionalUser.getPhoneNumber(),
+                optionalUser.getProfileImage());
     }
 }
