@@ -94,9 +94,9 @@ public class TaskService {
     }
 
     @Transactional
-    public void editStateTask(Long id, Task taskFromFE){
+    public void editStateTask(Long id, EditTaskDTO editTaskDTO){
         Task task = getUsersTask(id);
-        task.setTaskState(taskFromFE.getTaskState());
+        task.setTaskState(editTaskDTO.getState());
     }
 
     public <T> void saveIfNotEmpty(T toBeSet, Task task, BiConsumer<Task,T> setter){
