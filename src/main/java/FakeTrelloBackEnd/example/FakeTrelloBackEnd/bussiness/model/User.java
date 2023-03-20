@@ -51,7 +51,9 @@ public class User {
     @Column(name = "status")
     private boolean enable;
 
-    @Column(name="profile_image")
+
+    @Column(name="profile_image",
+            columnDefinition = "LONGTEXT")
     private String profileImage;
 
     public User(String password, String email) {
