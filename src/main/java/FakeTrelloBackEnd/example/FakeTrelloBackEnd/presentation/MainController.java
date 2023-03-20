@@ -102,7 +102,7 @@ public class MainController {
     //PREPARING FOR IMAGE
 
     @PutMapping("/uploadProfilePicture")
-    public void uploadProfilePicture(@RequestParam("image") String image, Authentication authentication
+    public void uploadProfilePicture(@RequestParam("image") MultipartFile image, Authentication authentication
     ){
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         userService.uploadProfilePicture(image, userDetails.getUsername());

@@ -24,8 +24,11 @@ import java.util.function.BiConsumer;
 @Service
 @AllArgsConstructor
 public class TaskService {
+
     private final TaskRepository taskRepository;
     private UserRepository userRepository;
+
+
     @Transactional
     public void createTask(CreateTaskDTO createTaskDTO, String email) throws IOException {
         User user = getUserOrThrow(email);
@@ -39,30 +42,21 @@ public class TaskService {
         user.getListOfTasks().add(task); //saving automation, it's happen by annotation @Transactional
         taskRepository.save(task);
     }
-/*
 
-    private Set<byte[]> checkIfImagesAreValidOrThrow(Set<MultipartFile> listOfImages) throws IOException {
-            listOfImages.forEach((item) ->{
-                if (Objects.requireNonNull(item.getOriginalFilename()).contains(".."))
-                    throw new BadRequest("Not supported");
-            });
+    @Transactional
+    public Task editTask(EditTaskDTO dto) {
+        Task task = getUsersTask(dto.getId());
 
-        return encodeBytesToStringWithTryCatch(listOfImages);
+        saveIfNotEmpty(dto.getText(), task, Task::setText);
+        saveIfNotEmpty(dto.getDeadline(), task, Task::setDeadline);
+
+        return task;
     }
 
-    private Set<byte[]> encodeBytesToStringWithTryCatch(Set<MultipartFile> listOfImages) throws IOException {
-        Set<byte[]> listOfBytesOfImages = new HashSet<>();
-
-        for (MultipartFile image: listOfImages) {
-            listOfBytesOfImages.add(image.getBytes());
-        }
-        return listOfBytesOfImages;
-    }
-*/
-
-
-    public User getUserOrThrow(String email){
-        return userRepository.findByEmail(email).orElseThrow(() -> new UserDoesntExist("User was not found!"));
+    @Transactional
+    public void editStateTask(Long id, EditTaskDTO editTaskDTO){
+        Task task = getUsersTask(id);
+        task.setState(editTaskDTO.getState());
     }
 
     public Set<Task> getAllUsersTasks(String email) {
@@ -83,26 +77,14 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
-    @Transactional
-    public Task editTask(EditTaskDTO dto) {
-        Task task = getUsersTask(dto.getId());
-
-        saveIfNotEmpty(dto.getText(), task, Task::setText);
-        saveIfNotEmpty(dto.getDeadline(), task, Task::setDeadline);
-
-        return task;
-    }
-
-    @Transactional
-    public void editStateTask(Long id, EditTaskDTO editTaskDTO){
-        Task task = getUsersTask(id);
-        task.setState(editTaskDTO.getState());
-    }
-
     public <T> void saveIfNotEmpty(T toBeSet, Task task, BiConsumer<Task,T> setter){
         if (toBeSet == null)
             throw new BadRequest("Something went wrong!");
 
         setter.accept(task, toBeSet);
+    }
+
+    public User getUserOrThrow(String email){
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserDoesntExist("User was not found!"));
     }
 }

@@ -35,10 +35,6 @@ public class UserService {
     private final VerificationTokenService verificationTokenService;
     private final EmailService emailService;
 
-    public Optional<User> getUserByEmail(String email){
-        return userRepository.findByEmail(email);
-    }
-
     public void addNewUser(UserRegistrationDTO userRegistrationDTO) {
 
         if(userRepository.findByEmail(userRegistrationDTO.getEmail()).isEmpty()){
@@ -62,6 +58,10 @@ public class UserService {
         }
     }
 
+    public Optional<User> getUserByEmail(String email){
+        return userRepository.findByEmail(email);
+    }
+
     public void deleteUser(String email) {
         userRepository.delete(checkIfUserExistAndSendBack(email));
     }
@@ -83,39 +83,15 @@ public class UserService {
             //throw new BadRequest("Something went wrong!");
     }
 
-    public UserDetailsDTO getUserDetails(String email) {
-        User userOptional = checkIfUserExistAndSendBack(email); //findUserOrThrow
-
-        return convertUserToDTO(userOptional);
-    }
-
     public User checkIfUserExistAndSendBack(String email){
         return userRepository.findByEmail(email).orElseThrow(() -> new UserDoesntExist("User doesn't found!"));
     }
 
-
-
-
     @Transactional
-    public void activateUserEmail(String token) {
-        VerificationToken verificationToken = verificationTokenService.findByToken(token);
+    public void uploadProfilePicture(MultipartFile image, String email) {
+        User user = checkIfUserExistAndSendBack(email);
+       // user.setProfileImage(image);
 
-        if(verificationToken == null){
-           throw new TokenInvalid("Your verification token is invalid!");
-
-        }else {
-            User user = verificationToken.getUser();
-
-            if (!user.isEnable()) {
-                Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-                if (verificationToken.getExpiryDate().before(currentTimestamp)) {
-                   throw new TokenExpired("Your verification token has expired!");
-                } else {
-                    user.setEnable(true);
-                    verificationTokenService.deleteToken(token);
-                }
-            }
-        }
     }
 
 
@@ -128,6 +104,41 @@ public class UserService {
 
         emailService.sendResetPasswordEmail(user);
     }
+
+    @Transactional
+    public void activateUserEmail(String token) {
+        VerificationToken verificationToken = verificationTokenService.findByToken(token);
+
+        if(verificationToken == null){
+            throw new TokenInvalid("Your verification token is invalid!");
+
+        }else {
+            User user = verificationToken.getUser();
+
+            if (!user.isEnable()) {
+                Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+                if (verificationToken.getExpiryDate().before(currentTimestamp)) {
+                    throw new TokenExpired("Your verification token has expired!");
+                } else {
+                    user.setEnable(true);
+                    verificationTokenService.deleteToken(token);
+                }
+            }
+        }
+    }
+
+    @Transactional
+    public void resetPassword(User user, String password){
+        if(!Objects.equals(user.getPassword(), password)){
+
+            user.setPassword(encoder.encode(password));
+            userRepository.save(user);
+            System.out.println(user.getPassword());
+        }else {
+            throw new BadRequest("Password is same or not valid!");
+        }
+    }
+
 
     public void checkVerificationTokenIsValidOrThrow(String token, String password) {
         VerificationToken verificationToken = verificationTokenService.findByToken(token);
@@ -149,25 +160,10 @@ public class UserService {
         }
     }
 
-    @Transactional
-    public void resetPassword(User user, String password){
-        if(!Objects.equals(user.getPassword(), password)){
 
-             user.setPassword(encoder.encode(password));
-             userRepository.save(user);
-            System.out.println(user.getPassword());
-        }else {
-            throw new BadRequest("Password is same or not valid!");
-        }
-    }
-
-    @Transactional
-    public void uploadProfilePicture(String image, String email) {
-        User user = checkIfUserExistAndSendBack(email);
-        user.setProfileImage(image);
-
-    }
-
+    /**
+     * Part for DTO method
+     */
     public UserDetailsDTO convertUserToDTO(User optionalUser){
         return new UserDetailsDTO(
                 optionalUser.getEmail(),
@@ -176,5 +172,11 @@ public class UserService {
                 optionalUser.getNickname(),
                 optionalUser.getPhoneNumber(),
                 optionalUser.getProfileImage());
+    }
+
+    public UserDetailsDTO getUserDetails(String email) {
+        User userOptional = checkIfUserExistAndSendBack(email); //findUserOrThrow
+
+        return convertUserToDTO(userOptional);
     }
 }
