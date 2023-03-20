@@ -52,9 +52,9 @@ public class User {
     private boolean enable;
 
 
-    @Column(name="profile_image",
-            columnDefinition = "TEXT")
-    private String profileImage;
+    @Lob
+    @Column(name="profile_image")
+    private byte[] profileImage;
 
     public User(String password, String email) {
         this.password = password;
@@ -63,7 +63,7 @@ public class User {
         this.lastName = null;
         this.nickname = null;
         this.phoneNumber = null;
-        this.profileImage = "";
+        this.profileImage = null;
         this.listOfTasks = new HashSet<>();
         this.enable = false;
     }

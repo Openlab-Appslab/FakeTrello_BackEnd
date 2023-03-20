@@ -98,7 +98,7 @@ public class UserService {
         if(fileName.contains(".."))
             throw new BadRequest("Image is not a valid");
 
-        user.setProfileImage(Base64.getEncoder().encodeToString(image.getBytes()));
+        user.setProfileImage(image.getBytes());
 
 
        // user.setProfileImage(image);
