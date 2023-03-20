@@ -138,8 +138,8 @@ public class UserService {
                     outputStream.write(buffer, 0, count);
                 }
                 outputStream.close();
-            } catch (IOException ioe) {
-            } catch (DataFormatException e) {
+            } catch (IOException | DataFormatException ignored) {
+                System.out.println("nejde to ?????");
             }
             return outputStream.toByteArray();
         }else {
