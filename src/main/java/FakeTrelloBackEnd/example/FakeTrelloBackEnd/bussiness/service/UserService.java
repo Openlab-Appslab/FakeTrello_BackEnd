@@ -104,9 +104,6 @@ public class UserService {
 
         user.setProfileImage(compressBytes(image.getBytes()));
 
-
-       // user.setProfileImage(image);
-
     }
 
     public static byte[] compressBytes(byte[] data) {
@@ -130,20 +127,25 @@ public class UserService {
     }
 
     public static byte[] decompressBytes(byte[] data) {
-        Inflater inflater = new Inflater();
-        inflater.setInput(data);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-        byte[] buffer = new byte[1024];
-        try {
-            while (!inflater.finished()) {
-                int count = inflater.inflate(buffer);
-                outputStream.write(buffer, 0, count);
+        if(data != null){
+            Inflater inflater = new Inflater();
+            inflater.setInput(data);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+            byte[] buffer = new byte[1024];
+            try {
+                while (!inflater.finished()) {
+                    int count = inflater.inflate(buffer);
+                    outputStream.write(buffer, 0, count);
+                }
+                outputStream.close();
+            } catch (IOException ioe) {
+            } catch (DataFormatException e) {
             }
-            outputStream.close();
-        } catch (IOException ioe) {
-        } catch (DataFormatException e) {
+            return outputStream.toByteArray();
+        }else {
+            return null;
         }
-        return outputStream.toByteArray();
+
     }
 
 
