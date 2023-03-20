@@ -53,7 +53,7 @@ public class User {
 
 
     @Column(name="profile_image",
-            columnDefinition = "LONGTEXT")
+            columnDefinition = "TEXT")
     private String profileImage;
 
     public User(String password, String email) {
