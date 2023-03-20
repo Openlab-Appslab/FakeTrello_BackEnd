@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Base64;
@@ -27,6 +28,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 @Service
 @AllArgsConstructor
@@ -98,11 +102,48 @@ public class UserService {
         if(fileName.contains(".."))
             throw new BadRequest("Image is not a valid");
 
-        user.setProfileImage(image.getBytes());
+        user.setProfileImage(compressBytes(image.getBytes()));
 
 
        // user.setProfileImage(image);
 
+    }
+
+    public static byte[] compressBytes(byte[] data) {
+        Deflater deflater = new Deflater();
+        deflater.setInput(data);
+        deflater.finish();
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+        byte[] buffer = new byte[1024];
+        while (!deflater.finished()) {
+            int count = deflater.deflate(buffer);
+            outputStream.write(buffer, 0, count);
+        }
+        try {
+            outputStream.close();
+        } catch (IOException e) {
+        }
+        System.out.println("Compressed Image Byte Size - " + outputStream.toByteArray().length);
+
+        return outputStream.toByteArray();
+    }
+
+    public static byte[] decompressBytes(byte[] data) {
+        Inflater inflater = new Inflater();
+        inflater.setInput(data);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+        byte[] buffer = new byte[1024];
+        try {
+            while (!inflater.finished()) {
+                int count = inflater.inflate(buffer);
+                outputStream.write(buffer, 0, count);
+            }
+            outputStream.close();
+        } catch (IOException ioe) {
+        } catch (DataFormatException e) {
+        }
+        return outputStream.toByteArray();
     }
 
 
@@ -182,7 +223,7 @@ public class UserService {
                 optionalUser.getLastName(),
                 optionalUser.getNickname(),
                 optionalUser.getPhoneNumber(),
-                optionalUser.getProfileImage());
+                decompressBytes(optionalUser.getProfileImage()));
     }
 
     public UserDetailsDTO getUserDetails(String email) {

@@ -56,6 +56,11 @@ public class User {
     @Column(name="profile_image")
     private byte[] profileImage;
 
+    @JsonIgnore
+    @Column(name = "images")
+    @OneToOne(mappedBy = "task")
+    private Image listOfImages;
+
     public User(String password, String email) {
         this.password = password;
         this.email = email;
