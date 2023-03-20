@@ -24,7 +24,5 @@ public class Image {
     @ManyToOne(cascade = CascadeType.ALL)
     private Task task;
 
-    @OneToOne
-    private User user;
-}
+ }
 
