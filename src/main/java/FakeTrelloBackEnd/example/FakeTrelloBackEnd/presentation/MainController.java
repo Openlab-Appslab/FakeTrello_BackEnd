@@ -2,6 +2,7 @@ package FakeTrelloBackEnd.example.FakeTrelloBackEnd.presentation;
 
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.taskDTO.CreateTaskDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.taskDTO.EditTaskDTO;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.taskDTO.TaskInfoDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserDetailsDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserEditDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserRegistrationDTO;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.SplittableRandom;
 
@@ -67,7 +69,7 @@ public class MainController {
     }
 
     @GetMapping("/getAllUsersTasks")
-    public Set<Task> getAllUsersTasks(Authentication authentication){
+    public List<TaskInfoDTO> getAllUsersTasks(Authentication authentication){
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return taskService.getAllUsersTasks(userDetails.getUsername());
     }

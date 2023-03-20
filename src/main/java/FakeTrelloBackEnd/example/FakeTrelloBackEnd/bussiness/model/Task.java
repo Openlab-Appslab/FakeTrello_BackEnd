@@ -1,5 +1,6 @@
 package FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model;
 
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.enums.TaskState;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -31,7 +33,7 @@ public class Task {
     private String deadline;
 
     @Column(name="state")
-    private String state;
+    private Enum state;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -40,13 +42,13 @@ public class Task {
     @JsonIgnore
     @Column(name = "images")
     @OneToMany(mappedBy = "task")
-    private Set<Image> listOfImages;
+    private List<Image> listOfImages;
 
     public Task(String deadline, String text, User user) {
         this.deadline = deadline;
         this.text = text;
         this.user = user;
-        this.state = "toDo";
+        this.state = TaskState.TODO;
     }
 
 }

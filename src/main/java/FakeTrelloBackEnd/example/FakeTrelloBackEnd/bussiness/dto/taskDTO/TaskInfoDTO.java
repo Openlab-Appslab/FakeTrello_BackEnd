@@ -10,7 +10,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TaskInfoDTO {
-    private String headline;
+    private Long id;
+    private String deadline;
     private String text;
-    private String date;
+    private String state;
 }

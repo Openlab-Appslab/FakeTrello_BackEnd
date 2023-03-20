@@ -2,6 +2,8 @@ package FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service;
 
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.taskDTO.CreateTaskDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.taskDTO.EditTaskDTO;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.taskDTO.TaskInfoDTO;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.enums.TaskState;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.Task;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.User;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.TaskRepository;
@@ -16,9 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Table;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 @Service
@@ -56,12 +56,27 @@ public class TaskService {
     @Transactional
     public void editStateTask(Long id, EditTaskDTO editTaskDTO){
         Task task = getUsersTask(id);
-        task.setState(editTaskDTO.getState());
+
+        if(editTaskDTO.getState().equals(TaskState.INPROGRESS.toString()))
+            task.setState(TaskState.INPROGRESS);
+        else if (editTaskDTO.getState().equals(TaskState.DONE.toString()))
+            task.setState(TaskState.DONE);
+        else
+            task.setState(TaskState.TODO);
+
     }
 
-    public Set<Task> getAllUsersTasks(String email) {
+    public List<TaskInfoDTO> getAllUsersTasks(String email) {
+
         User user = getUserOrThrow(email);
-        return user.getListOfTasks();
+
+        List<TaskInfoDTO> returnList = new ArrayList<>();
+
+        for (Task task : user.getListOfTasks()){
+            returnList.add(convertToTaskInfoDTO(task));
+        }
+
+        return returnList;
     }
 
     public Task getUsersTask(Long id) {
@@ -86,5 +101,13 @@ public class TaskService {
 
     public User getUserOrThrow(String email){
         return userRepository.findByEmail(email).orElseThrow(() -> new UserDoesntExist("User was not found!"));
+    }
+
+    public static TaskInfoDTO convertToTaskInfoDTO(Task task){
+        return new TaskInfoDTO(
+                task.getId(),
+                task.getDeadline(),
+                task.getText(),
+                task.getState().toString());
     }
 }
