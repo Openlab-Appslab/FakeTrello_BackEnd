@@ -12,6 +12,7 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserDoesntExist;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.tokenException.TokenExpired;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.tokenException.TokenInvalid;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -87,9 +89,18 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow(() -> new UserDoesntExist("User doesn't found!"));
     }
 
+    @SneakyThrows
     @Transactional
     public void uploadProfilePicture(MultipartFile image, String email) {
         User user = checkIfUserExistAndSendBack(email);
+
+        String fileName = StringUtils.cleanPath(image.getOriginalFilename());
+        if(fileName.contains(".."))
+            throw new BadRequest("Image is not a valid");
+
+        user.setProfileImage(Base64.getEncoder().encodeToString(image.getBytes()));
+
+
        // user.setProfileImage(image);
 
     }
