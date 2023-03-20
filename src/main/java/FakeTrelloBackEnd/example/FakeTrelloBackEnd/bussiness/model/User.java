@@ -50,6 +50,7 @@ public class User {
 
     @Column(name = "status")
     private boolean enable;
+
     @Column(name="profile_image")
     private String profileImage;
 

@@ -33,7 +33,7 @@ public class Task {
     private String deadline;
 
     @Column(name="state")
-    private String taskState;
+    private String state;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -48,7 +48,7 @@ public class Task {
         this.deadline = deadline;
         this.text = text;
         this.user = user;
-        this.taskState = "toDo";
+        this.state = "toDo";
     }
 
 }
