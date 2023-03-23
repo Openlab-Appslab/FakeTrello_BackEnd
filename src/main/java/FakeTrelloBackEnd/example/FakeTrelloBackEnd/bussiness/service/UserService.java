@@ -3,8 +3,10 @@ package FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserDetailsDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserEditDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserRegistrationDTO;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.Image;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.User;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.VerificationToken;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.ImageRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.UserRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.generalException.BadRequest;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.userException.UserAlreadyExists;
@@ -41,6 +43,7 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final VerificationTokenService verificationTokenService;
     private final EmailService emailService;
+    private final ImageRepository imageRepository;
 
     public void addNewUser(UserRegistrationDTO userRegistrationDTO) {
 
@@ -105,9 +108,13 @@ public class UserService {
 
         user.setProfileImage(StreamUtils.copyToByteArray(image.getInputStream()));
 
+        byte[] imageInByte = StreamUtils.copyToByteArray(image.getInputStream());
+        Image objectImage = new Image(imageInByte, user);
+        Image ObjectImageForDB = imageRepository.save(objectImage);
+
+        user.setProfilePicture(ObjectImageForDB);
+
     }
-
-
 
     public ResponseEntity<byte[]> getProfilePicture(String email){
         User user = checkIfUserExistAndSendBack(email);
@@ -117,26 +124,11 @@ public class UserService {
                 .body(user.getProfileImage());
     }
 
-    public static byte[] decompressBytes(byte[] data) {
-        if(data != null){
-            Inflater inflater = new Inflater();
-            inflater.setInput(data);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-            byte[] buffer = new byte[1024];
-            try {
-                while (!inflater.finished()) {
-                    int count = inflater.inflate(buffer);
-                    outputStream.write(buffer, 0, count);
-                }
-                outputStream.close();
-            } catch (IOException | DataFormatException ignored) {
-                System.out.println("nejde to ?????");
-            }
-            return outputStream.toByteArray();
-        }else {
-            return null;
-        }
-
+    public ResponseEntity<byte[]> getProfilePicture(byte[] imageInByte){
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(imageInByte);
     }
 
 
@@ -216,7 +208,7 @@ public class UserService {
                 optionalUser.getLastName(),
                 optionalUser.getNickname(),
                 optionalUser.getPhoneNumber(),
-                decompressBytes(optionalUser.getProfileImage()));
+                getProfilePicture(optionalUser.getProfileImage()));
     }
 
     public UserDetailsDTO getUserDetails(String email) {

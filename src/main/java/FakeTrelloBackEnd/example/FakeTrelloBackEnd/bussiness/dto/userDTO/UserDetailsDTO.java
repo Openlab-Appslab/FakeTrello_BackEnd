@@ -16,5 +16,5 @@ public class UserDetailsDTO {
     private String lastName;
     private String nickname;
     private Integer phoneNumber;
-    private byte[] profilePicture;
+    private ResponseEntity<byte[]> profilePicture;
 }
