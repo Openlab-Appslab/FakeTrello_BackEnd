@@ -118,10 +118,15 @@ public class UserService {
 
     public ResponseEntity<byte[]> getProfilePicture(String email){
         User user = checkIfUserExistAndSendBack(email);
+        System.out.println(getImageLikeByte(user.getProfilePicture()));
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.IMAGE_JPEG)
-                .body(user.getProfileImage());
+                .body(getImageLikeByte(user.getProfilePicture()));
+    }
+
+    public byte[] getImageLikeByte(Image image){
+        return image.getImage();
     }
 
     public ResponseEntity<byte[]> getProfilePicture(byte[] imageInByte){

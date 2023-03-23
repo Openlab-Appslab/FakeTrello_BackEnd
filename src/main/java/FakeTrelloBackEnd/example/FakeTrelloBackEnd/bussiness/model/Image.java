@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 
@@ -18,7 +19,9 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "string_in_image", columnDefinition="TEXT")
+    @Lob
+    @Column(name="profile_image")
+    @Type(type = "org.hibernate.type.ImageType")
     private byte[] image;
 
     @ManyToOne(cascade = CascadeType.ALL)
