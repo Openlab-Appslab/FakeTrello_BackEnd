@@ -10,6 +10,10 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.Task;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service.TaskService;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -104,9 +108,13 @@ public class MainController {
     }
 
     @GetMapping("/getProfilePicture")
-    public byte[] getProfilePicture(Authentication authentication){
+    public ResponseEntity<byte[]> getProfilePicture(Authentication authentication){
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return userService.getProfilePicture(userDetails.getUsername());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setCacheControl(CacheControl.noCache().getHeaderValue());
+
+        return new ResponseEntity<>(userService.getProfilePicture(userDetails.getUsername()), headers, HttpStatus.OK);
     }
 
 
