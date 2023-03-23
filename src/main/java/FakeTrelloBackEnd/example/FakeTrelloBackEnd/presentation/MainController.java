@@ -107,11 +107,7 @@ public class MainController {
     @GetMapping("/getProfilePicture")
     public ResponseEntity<byte[]> getProfilePicture(Authentication authentication){
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(userService.getProfilePicture(userDetails.getUsername()));
+        return userService.getProfilePicture(userDetails.getUsername());
     }
 
 

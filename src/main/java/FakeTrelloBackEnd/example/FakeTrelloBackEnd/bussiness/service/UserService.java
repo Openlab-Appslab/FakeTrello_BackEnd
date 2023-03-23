@@ -13,9 +13,12 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.tokenException.Toke
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.tokenException.TokenInvalid;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -96,37 +99,22 @@ public class UserService {
     public void uploadProfilePicture(MultipartFile image, String email) {
         User user = checkIfUserExistAndSendBack(email);
 
-        String fileName = StringUtils.cleanPath(image.getOriginalFilename());
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(image.getOriginalFilename()));
         if(fileName.contains(".."))
             throw new BadRequest("Image is not a valid");
 
-        user.setProfileImage(compressBytes(image.getBytes()));
+        user.setProfileImage(StreamUtils.copyToByteArray(image.getInputStream()));
 
     }
 
-    public static byte[] compressBytes(byte[] data) {
-        Deflater deflater = new Deflater();
-        deflater.setInput(data);
-        deflater.finish();
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-        byte[] buffer = new byte[1024];
-        while (!deflater.finished()) {
-            int count = deflater.deflate(buffer);
-            outputStream.write(buffer, 0, count);
-        }
-        try {
-            outputStream.close();
-        } catch (IOException e) {
-        }
-        System.out.println("Compressed Image Byte Size - " + outputStream.toByteArray().length);
 
-        return outputStream.toByteArray();
-    }
-
-    public byte[] getProfilePicture(String email){
-        Optional<User> user = getUserByEmail(email);
-        return decompressBytes(user.get().getProfileImage());
+    public ResponseEntity<byte[]> getProfilePicture(String email){
+        User user = checkIfUserExistAndSendBack(email);
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(user.getProfileImage());
     }
 
     public static byte[] decompressBytes(byte[] data) {
