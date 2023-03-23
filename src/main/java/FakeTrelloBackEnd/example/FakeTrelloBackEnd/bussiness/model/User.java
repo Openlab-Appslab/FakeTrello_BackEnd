@@ -54,6 +54,7 @@ public class User {
 
     @Lob
     @Column(name="profile_image")
+    @Type(type = "org.hibernate.type.ImageType")
     private byte[] profileImage;
 
 

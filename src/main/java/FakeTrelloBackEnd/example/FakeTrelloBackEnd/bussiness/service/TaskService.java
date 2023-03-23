@@ -8,15 +8,13 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.Task;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.User;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.TaskRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.UserRepository;
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.BadRequest;
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserDoesntExist;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.generalException.BadRequest;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.userException.UserDoesntExist;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.taskException.TaskDoesNotExist;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.Table;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.BiConsumer;

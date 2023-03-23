@@ -7,23 +7,16 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserDet
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserEditDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserRegistrationDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.Task;
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.User;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service.TaskService;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service.UserService;
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.BadRequest;
 import lombok.AllArgsConstructor;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
-import java.util.SplittableRandom;
 
 @RestController
 @AllArgsConstructor
@@ -108,6 +101,12 @@ public class MainController {
     ){
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         userService.uploadProfilePicture(image, userDetails.getUsername());
+    }
+
+    @GetMapping("/getProfilePicture")
+    public byte[] getProfilePicture(Authentication authentication){
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return userService.getProfilePicture(userDetails.getUsername());
     }
 
 

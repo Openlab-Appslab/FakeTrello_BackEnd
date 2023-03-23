@@ -3,7 +3,7 @@ package FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.User;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.VerificationToken;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.VerificationTokenRepository;
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserDoesntExist;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.userException.UserDoesntExist;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

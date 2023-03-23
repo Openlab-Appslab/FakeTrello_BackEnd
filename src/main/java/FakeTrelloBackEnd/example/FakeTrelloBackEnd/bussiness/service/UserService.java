@@ -6,14 +6,13 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserReg
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.User;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.VerificationToken;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.UserRepository;
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.BadRequest;
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserAlreadyExists;
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.UserDoesntExist;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.generalException.BadRequest;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.userException.UserAlreadyExists;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.userException.UserDoesntExist;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.tokenException.TokenExpired;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.tokenException.TokenInvalid;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -124,6 +122,11 @@ public class UserService {
         System.out.println("Compressed Image Byte Size - " + outputStream.toByteArray().length);
 
         return outputStream.toByteArray();
+    }
+
+    public byte[] getProfilePicture(String email){
+        Optional<User> user = getUserByEmail(email);
+        return decompressBytes(user.get().getProfileImage());
     }
 
     public static byte[] decompressBytes(byte[] data) {
