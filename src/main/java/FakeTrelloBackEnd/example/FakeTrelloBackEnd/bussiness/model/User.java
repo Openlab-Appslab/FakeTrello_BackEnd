@@ -57,6 +57,11 @@ public class User {
     @Type(type = "org.hibernate.type.ImageType")
     private byte[] profileImage;
 
+
+    /**
+     * TO DO: odstranit relationship between Image and User
+     * After that Object Image allow only for task
+     */
     @OneToOne
     private Image profilePicture;
 
