@@ -11,6 +11,7 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service.TaskService
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -56,8 +57,8 @@ public class MainController {
 
     //TASK CONTROLLER
 
-    @PostMapping(value = "/createTask")
-    public void createTask(@RequestBody CreateTaskDTO createTaskDTO, Authentication authentication) throws IOException {
+    @RequestMapping(value = "createTask" , method = RequestMethod.POST, consumes = {"multipart/form-data"})
+    public void createTask(@ModelAttribute CreateTaskDTO createTaskDTO, Authentication authentication) throws IOException {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         taskService.createTask(createTaskDTO, userDetails.getUsername());
     }

@@ -4,8 +4,12 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.taskDTO.CreateT
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.taskDTO.EditTaskDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.taskDTO.TaskInfoDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.enums.TaskState;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.File;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.Image;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.Task;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.User;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.FileRepository;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.ImageRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.TaskRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.UserRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.userException.*;
@@ -14,10 +18,13 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.taskException.TaskD
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 @Service
@@ -26,6 +33,8 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private UserRepository userRepository;
+    private final ImageRepository imageRepository;
+    private final FileRepository fileRepository;
 
 
     @Transactional
@@ -38,7 +47,37 @@ public class TaskService {
                 user
         );
 
-        user.getListOfTasks().add(task); //saving automation, it's happen by annotation @Transactional
+        if(createTaskDTO.getListOfImage() != null){
+            createTaskDTO.getListOfImage().forEach(e -> {
+
+                String fileName = StringUtils.cleanPath(Objects.requireNonNull(e.getOriginalFilename()));
+                if (fileName.contains(".."))
+                    throw new BadRequest("Image is not a valid");
+                try {
+                    task.getListOfImages().add(imageRepository.save(new Image(StreamUtils.copyToByteArray(e.getInputStream()), task)));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }});
+
+            }
+
+
+        if(createTaskDTO.getListOfFile() != null){
+            createTaskDTO.getListOfFile().forEach(e -> {
+
+                String fileName = StringUtils.cleanPath(Objects.requireNonNull(e.getOriginalFilename()));
+                if (fileName.contains(".."))
+                    throw new BadRequest("Image is not a valid");
+                try {
+                    task.getListOfFiles().add(fileRepository.save(new File(StreamUtils.copyToByteArray(e.getInputStream()), task)));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }});
+        }
+
+
+
+            user.getListOfTasks().add(task); //saving automation, it's happen by annotation @Transactional
         taskRepository.save(task);
     }
 

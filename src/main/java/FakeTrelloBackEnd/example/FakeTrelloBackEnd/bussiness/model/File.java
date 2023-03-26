@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 
@@ -21,10 +22,15 @@ public class File {
 
     @Lob
     @Column(name="file")
+    @Type(type = "org.hibernate.type.ImageType")
     private byte[] file;
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Task task;
 
 
+    public File(byte[] file, Task task) {
+        this.file = file;
+        this.task = task;
+    }
 }
