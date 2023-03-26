@@ -214,7 +214,7 @@ public class UserService {
                 optionalUser.getLastName(),
                 optionalUser.getNickname(),
                 optionalUser.getPhoneNumber(),
-                Arrays.toString(optionalUser.getProfileImage()));
+                optionalUser.getProfileImage().toString());
     }
 
     public UserDetailsDTO getUserDetails(String email) {
