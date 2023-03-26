@@ -3,20 +3,17 @@ package FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserDetailsDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserEditDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserRegistrationDTO;
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.Image;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.User;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.VerificationToken;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.ImageRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.UserRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.generalException.BadRequest;
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.userException.UserAlreadyExists;
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.userException.UserDoesntExist;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.tokenException.TokenExpired;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.tokenException.TokenInvalid;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.userException.UserAlreadyExists;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.userException.UserDoesntExist;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,14 +21,12 @@ import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Base64;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.BiConsumer;
-import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
 
 @Service
 @AllArgsConstructor
@@ -41,7 +36,6 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final VerificationTokenService verificationTokenService;
     private final EmailService emailService;
-    private final ImageRepository imageRepository;
 
     public void addNewUser(UserRegistrationDTO userRegistrationDTO) {
 
@@ -106,34 +100,9 @@ public class UserService {
 
         user.setProfileImage(StreamUtils.copyToByteArray(image.getInputStream()));
 
-        byte[] imageInByte = StreamUtils.copyToByteArray(image.getInputStream());
-        Image objectImage = new Image(imageInByte, user);
-        Image ObjectImageForDB = imageRepository.save(objectImage);
-
-        user.setProfilePicture(ObjectImageForDB);
+        user.setProfileImage(StreamUtils.copyToByteArray(image.getInputStream()));
 
     }
-
-    public ResponseEntity<byte[]> getProfilePicture(String email){
-        User user = checkIfUserExistAndSendBack(email);
-        System.out.println(getImageLikeByte(user.getProfilePicture()));
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(getImageLikeByte(user.getProfilePicture()));
-    }
-
-    public byte[] getImageLikeByte(Image image){
-        return image.getImage();
-    }
-
-    public ResponseEntity<byte[]> getProfilePicture(byte[] imageInByte){
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(imageInByte);
-    }
-
 
     @Transactional
     public void sendResetEmail(String email) throws Exception{

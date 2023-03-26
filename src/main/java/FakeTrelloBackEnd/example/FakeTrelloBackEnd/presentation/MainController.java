@@ -104,12 +104,6 @@ public class MainController {
         userService.uploadProfilePicture(image, userDetails.getUsername());
     }
 
-    @GetMapping("/getProfilePicture")
-    public ResponseEntity<byte[]> getProfilePicture(Authentication authentication){
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return userService.getProfilePicture(userDetails.getUsername());
-    }
-
 
     @PutMapping("/updateTaskState/{id}")
     public void updateTaskState(@PathVariable("id") Long id, @RequestBody EditTaskDTO editTaskDTO){

@@ -58,13 +58,6 @@ public class User {
     private byte[] profileImage;
 
 
-    /**
-     * TO DO: odstranit relationship between Image and User
-     * After that Object Image allow only for task
-     */
-    @OneToOne
-    private Image profilePicture;
-
 
     public User(String password, String email) {
         this.password = password;
@@ -76,7 +69,6 @@ public class User {
         this.profileImage = null;
         this.listOfTasks = new HashSet<>();
         this.enable = false;
-        this.profilePicture = null;
     }
 
 }
