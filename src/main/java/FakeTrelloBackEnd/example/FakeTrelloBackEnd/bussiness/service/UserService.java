@@ -27,10 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
@@ -214,7 +211,7 @@ public class UserService {
                 optionalUser.getLastName(),
                 optionalUser.getNickname(),
                 optionalUser.getPhoneNumber(),
-                optionalUser.getProfileImage().toString());
+                Base64.getEncoder().encodeToString(optionalUser.getProfileImage()));
     }
 
     public UserDetailsDTO getUserDetails(String email) {
