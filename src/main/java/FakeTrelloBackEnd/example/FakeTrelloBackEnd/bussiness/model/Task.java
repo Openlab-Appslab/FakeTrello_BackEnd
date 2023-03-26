@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -44,11 +45,18 @@ public class Task {
     @OneToMany(mappedBy = "task")
     private List<Image> listOfImages;
 
+    @JsonIgnore
+    @Column(name = "files")
+    @OneToMany(mappedBy = "task")
+    private List<File> listOfFiles;
+
     public Task(String deadline, String text, User user) {
         this.deadline = deadline;
         this.text = text;
         this.user = user;
         this.state = TaskState.TODO;
+        this.listOfImages = new ArrayList<>();
+        this.listOfFiles = new ArrayList<>();
     }
 
 }
