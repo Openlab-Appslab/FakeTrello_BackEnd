@@ -205,13 +205,17 @@ public class UserService {
      * Part for DTO method
      */
     public UserDetailsDTO convertUserToDTO(User optionalUser){
+        String image = "";
+        if(optionalUser.getProfileImage() != null)
+            image = Base64.getEncoder().encodeToString(optionalUser.getProfileImage());
+
         return new UserDetailsDTO(
                 optionalUser.getEmail(),
                 optionalUser.getFirstName(),
                 optionalUser.getLastName(),
                 optionalUser.getNickname(),
                 optionalUser.getPhoneNumber(),
-                Base64.getEncoder().encodeToString(optionalUser.getProfileImage()));
+                image);
     }
 
     public UserDetailsDTO getUserDetails(String email) {
