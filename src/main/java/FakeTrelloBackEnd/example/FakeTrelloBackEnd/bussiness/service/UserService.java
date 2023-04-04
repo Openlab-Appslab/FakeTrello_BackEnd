@@ -5,7 +5,6 @@ import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserEdi
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserRegistrationDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.User;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.VerificationToken;
-import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.ImageRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.UserRepository;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.generalException.BadRequest;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.exception.tokenException.TokenExpired;
@@ -191,5 +190,14 @@ public class UserService {
         User userOptional = checkIfUserExistAndSendBack(email); //findUserOrThrow
 
         return convertUserToDTO(userOptional);
+    }
+
+    public void changePassword(String email, String password) {
+        User user = checkIfUserExistAndSendBack(email);
+
+        if(user.getPassword().equals(encoder.encode(password)))
+            throw new BadRequest("Password is same! Change it");
+
+        resetPassword(user, password);
     }
 }

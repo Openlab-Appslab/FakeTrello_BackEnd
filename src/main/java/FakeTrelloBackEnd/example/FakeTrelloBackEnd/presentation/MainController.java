@@ -55,6 +55,12 @@ public class MainController {
         userService.editUser(userEditDTO, userDetails.getUsername());
     }
 
+    @PutMapping("/changePassword")
+    public void changePassword(Authentication authentication, @RequestParam String password){
+        UserDetails user = (UserDetails) authentication.getPrincipal();
+        userService.changePassword(user.getUsername(), password);
+    }
+
     //TASK CONTROLLER
 
     @RequestMapping(value = "createTask" , method = RequestMethod.POST, consumes = {"multipart/form-data"})
