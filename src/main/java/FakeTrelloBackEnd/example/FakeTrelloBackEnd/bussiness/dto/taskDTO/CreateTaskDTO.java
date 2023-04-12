@@ -14,6 +14,8 @@ import java.util.Set;
 @Getter
 @Setter
 public class CreateTaskDTO {
+
+    private String title;
     private String deadline;
     private String text;
 

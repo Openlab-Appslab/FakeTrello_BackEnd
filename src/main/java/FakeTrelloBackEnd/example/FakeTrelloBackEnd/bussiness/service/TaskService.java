@@ -42,6 +42,7 @@ public class TaskService {
         User user = getUserOrThrow(email);
 
         Task task = new Task(
+                createTaskDTO.getTitle(),
                 createTaskDTO.getDeadline(),
                 createTaskDTO.getText(),
                 user
@@ -85,6 +86,7 @@ public class TaskService {
     public Task editTask(EditTaskDTO dto) {
         Task task = getUsersTask(dto.getId());
 
+        saveIfNotEmpty(dto.getTitle(), task, Task::setTitle);
         saveIfNotEmpty(dto.getText(), task, Task::setText);
         saveIfNotEmpty(dto.getDeadline(), task, Task::setDeadline);
 
@@ -144,6 +146,7 @@ public class TaskService {
     public static TaskInfoDTO convertToTaskInfoDTO(Task task){
         return new TaskInfoDTO(
                 task.getId(),
+                task.getTitle(),
                 task.getDeadline(),
                 task.getText(),
                 task.getState().toString());

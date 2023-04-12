@@ -10,6 +10,7 @@ import lombok.Setter;
 public class EditTaskDTO {
     private Long id;
     private String deadline;
+    private String title;
     private String text;
     private String state;
 }

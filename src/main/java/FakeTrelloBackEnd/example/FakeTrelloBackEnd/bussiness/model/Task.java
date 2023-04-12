@@ -25,6 +25,8 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "title")
+    private String title;
 
     @Column(name = "text",
             columnDefinition = "TEXT")
@@ -50,7 +52,8 @@ public class Task {
     @OneToMany(mappedBy = "task")
     private List<File> listOfFiles;
 
-    public Task(String deadline, String text, User user) {
+    public Task(String title ,String deadline, String text, User user) {
+        this.title = title;
         this.deadline = deadline;
         this.text = text;
         this.user = user;
