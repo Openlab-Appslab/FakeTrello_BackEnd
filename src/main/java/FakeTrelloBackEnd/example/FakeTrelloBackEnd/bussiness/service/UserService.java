@@ -3,6 +3,7 @@ package FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.service;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserDetailsDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserEditDTO;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.dto.userDTO.UserRegistrationDTO;
+import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.Schedule;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.User;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.bussiness.model.VerificationToken;
 import FakeTrelloBackEnd.example.FakeTrelloBackEnd.dataAccess.UserRepository;
@@ -125,6 +126,7 @@ public class UserService {
 
             if (!user.isEnable()) {
                 Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+                user.setSchedule(new Schedule(user));
                 if (verificationToken.getExpiryDate().before(currentTimestamp)) {
                     throw new TokenExpired("Your verification token has expired!");
                 } else {

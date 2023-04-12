@@ -51,13 +51,14 @@ public class User {
     @Column(name = "status")
     private boolean enable;
 
-
     @Lob
     @Column(name="profile_image")
     @Type(type = "org.hibernate.type.ImageType")
     private byte[] profileImage;
 
-
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "schedule_id", referencedColumnName = "id")
+    Schedule schedule;
 
     public User(String password, String email) {
         this.password = password;
@@ -69,6 +70,7 @@ public class User {
         this.profileImage = null;
         this.listOfTasks = new HashSet<>();
         this.enable = false;
+        this.schedule = null;
     }
 
 }
