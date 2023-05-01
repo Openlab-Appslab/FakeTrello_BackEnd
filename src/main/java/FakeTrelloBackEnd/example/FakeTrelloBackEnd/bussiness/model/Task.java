@@ -44,7 +44,7 @@ public class Task {
 
     @JsonIgnore
     @Column(name = "images")
-    @OneToMany(mappedBy = "task")
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> listOfImages;
 
     @JsonIgnore
