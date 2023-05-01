@@ -77,9 +77,7 @@ public class EmailService {
                     "</body>\n" +
                     "</html>";
 
-            String verifyURL= "http://localhost:4200" +"/resetPassword/"+token;
-
-            body = body.replace("[[URL]]", verifyURL);
+            body = body.replace("[[URL]]", "http://localhost:4200" +"/resetPassword/"+token);
 
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
