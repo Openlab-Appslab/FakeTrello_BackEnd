@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -129,6 +130,11 @@ public class TaskService {
                 task.getTitle(),
                 task.getDeadline(),
                 task.getText(),
-                task.getState().toString());
+                task.getState().toString(),
+                convertObjectToByte(task.getListOfImages()));
+    }
+
+    public static List<byte[]> convertObjectToByte(List<Image> listOfImage){
+        return listOfImage.stream().map(Image::getImage).collect(Collectors.toList());
     }
 }

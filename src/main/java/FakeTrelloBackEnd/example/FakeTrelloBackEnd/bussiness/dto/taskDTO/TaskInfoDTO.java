@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -16,4 +18,5 @@ public class TaskInfoDTO {
     private String deadline;
     private String text;
     private String state;
+    private List<byte[]> listOfImage;
 }
